@@ -18,11 +18,12 @@ tag mapped to a canonical tag.
 """
 
 import os
+import shutil
 from itertools import product
 from collections import defaultdict, namedtuple
 
 import click
-import jinja2
+import chevron
 
 
 # ocean version under build
@@ -141,8 +142,43 @@ def tags():
         print(tag)
 
 @cli.command()
-def dockerfiles():
-    pass
+@click.option('--ocean-version-scale', default=1, type=int,
+              help='Number of Ocean version components after major, in directory name.')
+def dockerfiles(ocean_version_scale):
+    """Create all Dockerfiles required to build our matrix of images."""
+
+    _, sub_tags = get_tags(OCEAN_VERSIONS, PYTHON_VERSIONS, PLATFORM_TAGS)
+
+    # purge old dockerfiles
+    base = './dockerfiles'
+    shutil.rmtree(base, ignore_errors=True)
+
+    # load template
+    template_path = 'Dockerfile-linux.template'
+    with open(template_path) as fp:
+        template = fp.read()
+
+    # generate Dockerfile for each canonical tag
+    for c_tag, c_sub in sub_tags.items():
+        click.echo(f"Processing {c_tag!r} = {c_sub!r}")
+        ocean_dir = version_rounded(c_sub['ocean'], ocean_version_scale)
+        python_dir = f"python{c_sub['python']}"
+        platform = c_sub['platform']
+
+        dir = os.path.join(base, ocean_dir, python_dir, platform)
+        target = os.path.join(dir, 'Dockerfile')
+        os.makedirs(dir)
+
+        dockerfile = chevron.render(template, data=dict(
+            python_version=c_sub['python'],
+            ocean_version=c_sub['ocean'],
+            distribution_tag=platform,
+            is_slim=('slim' in platform)))
+
+        click.echo(f"- writing {target!r}")
+        with open(target, "w") as fp:
+            fp.write(dockerfile)
+
 
 if __name__ == '__main__':
     cli()
