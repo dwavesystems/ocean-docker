@@ -27,7 +27,11 @@ import jinja2
 
 # ocean version under build
 # TODO: get latest from github releases
-OCEAN_VERSION = os.environ['OCEAN_VERSION']
+OCEAN_VERSION = os.getenv('OCEAN_VERSION')
+
+if OCEAN_VERSION is None:
+    print("Please specify Ocean version under build with OCEAN_VERSION env var.")
+    exit(1)
 
 # ocean version under build, as named tuple
 ocean_version_info = namedtuple('Version', 'major minor patch')(*OCEAN_VERSION.split('.'))
@@ -46,7 +50,7 @@ OCEAN_VERSION_MAJOR, OCEAN_VERSION_MINOR, OCEAN_VERSION_PATCH = OCEAN_VERSIONS_R
 # build a cartesian product of these subcomponents (sub-tags)
 # (`None` = use a value as defined in `CANONICAL_TAGS`, but leave out the sub-tag name)
 OCEAN_VERSIONS = {None}.union(OCEAN_VERSIONS_ROUNDED)
-PYTHON_VERSIONS = {None, 'python3.8', 'python3.9', 'python3.10'}
+PYTHON_VERSIONS = {None, '3.8', '3.9', '3.10'}
 PLATFORM_TAGS = {None, 'bullseye', 'slim', 'slim-bullseye'}
 
 # sub-tag alias map
@@ -59,7 +63,7 @@ CANONICAL_TAGS = {
         OCEAN_VERSION_PATCH: OCEAN_VERSION,
     },
     'python': {
-        None: 'python3.9'
+        None: '3.9'
     },
     'platform': {
         None: 'bullseye',
@@ -67,34 +71,49 @@ CANONICAL_TAGS = {
     }
 }
 
+def make_tag(ocean, python, platform, default_tag='latest'):
+    if python is not None:
+        python = f"python{python}"
 
-def build_tag(default_tag='latest', **subtags):
-    """Build a tag from sub-tags. Return (tag, canonical tag) tuple."""
-    # `subtags` key order matters! use: (ocean, python, platform)
-    nonempty_subtags = list(filter(None, subtags.values()))
+    nonempty_subtags = list(filter(None, (ocean, python, platform)))
     if nonempty_subtags:
         tag = '-'.join(nonempty_subtags)
     else:
         tag = default_tag
+    return tag
+
+
+def tag_info(default_tag='latest', **subtags):
+    """Build a tag from sub-tags. Return (tag, canonical tag, canonical subtags).
+    """
+    # `subtags` key order matters! use: (ocean, python, platform)
+    tag = make_tag(**subtags)
 
     # derive canonical sub-tag (from, possibly, an alias)
-    canonical_subtags = (CANONICAL_TAGS[k].get(v, v) for k, v in subtags.items())
-    canonical_tag = '-'.join(canonical_subtags)
+    canonical_subtags = {k: CANONICAL_TAGS[k].get(v, v) for k, v in subtags.items()}
+    canonical_tag = make_tag(**canonical_subtags)
 
-    return tag, canonical_tag
+    return namedtuple('BuildInfo', 'tag canonical_tag canonical_subtags')(
+        tag, canonical_tag, canonical_subtags)
 
 
 def get_tags(ocean_versions, python_versions, platform_tags):
-    """Produce a map of canonical tags (that we need to build) to a bag of
-    alias tags.
+    """Produce: (1) a map of canonical tags (that we need to build) to a bag of
+    alias tags; and (2) sub-tags for each canonical tag.
     """
     tag_bags = defaultdict(set)   # Dict[str, Set[str]]
+    sub_tags = dict()   # Dict[str, Dict[str, str]]
 
     for oc, py, pl in product(ocean_versions, python_versions, platform_tags):
-        tag, canonical_tag = build_tag(ocean=oc, python=py, platform=pl)
-        tag_bags[canonical_tag].add(tag)
+        info = tag_info(ocean=oc, python=py, platform=pl)
+        tag_bags[info.canonical_tag].add(info.tag)
+        sub_tags[info.canonical_tag] = info.canonical_subtags
 
-    return tag_bags
+    return tag_bags, sub_tags
+
+
+def version_rounded(version, scale, sep='.'):
+    return sep.join((version.split(sep))[:scale+1])
 
 
 @click.group()
@@ -104,13 +123,14 @@ def cli():
 @cli.command()
 def tags():
     """Print tags to build for OCEAN_VERSION from environment."""
-    tag_bags = get_tags(OCEAN_VERSIONS, PYTHON_VERSIONS, PLATFORM_TAGS)
+
+    tag_bags, _ = get_tags(OCEAN_VERSIONS, PYTHON_VERSIONS, PLATFORM_TAGS)
     all_tags = set(tag_bags.keys()).union(*tag_bags.values())
 
     print(f"===\nmatrix\n===\n"
-        f"- ocean: {', '.join(filter(None, OCEAN_VERSIONS))}\n"
-        f"- python: {', '.join(filter(None, PYTHON_VERSIONS))}\n"
-        f"- platform: {', '.join(filter(None, PLATFORM_TAGS))}\n")
+          f"- ocean: {', '.join(filter(None, OCEAN_VERSIONS))}\n"
+          f"- python: {', '.join(filter(None, PYTHON_VERSIONS))}\n"
+          f"- platform: {', '.join(filter(None, PLATFORM_TAGS))}\n")
 
     print("===\ncanonical images/tags:", len(tag_bags), '\n===')
     for canonical, aliases in tag_bags.items():
