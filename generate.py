@@ -187,7 +187,8 @@ def meta(tags):
 def dockerfiles(ocean_version_scale):
     """Create all Dockerfiles required to build our matrix of images."""
 
-    sub_tags = get_tags(OCEAN_VERSIONS, PYTHON_VERSIONS, PLATFORM_TAGS).canonical
+    build_info = get_tags(OCEAN_VERSIONS, PYTHON_VERSIONS, PLATFORM_TAGS)
+    sub_tags = build_info.canonical
 
     # purge old dockerfiles
     base = './dockerfiles'
@@ -207,6 +208,7 @@ def dockerfiles(ocean_version_scale):
 
         dir = os.path.join(base, ocean_dir, python_dir, platform)
         target = os.path.join(dir, 'Dockerfile')
+        tagsfile = os.path.join(dir, 'tags.json')
         os.makedirs(dir)
 
         dockerfile = chevron.render(template, data=dict(
@@ -218,6 +220,10 @@ def dockerfiles(ocean_version_scale):
         click.echo(f"- writing {target!r}")
         with open(target, "w") as fp:
             fp.write(dockerfile)
+
+        click.echo(f"- writing {tagsfile!r}")
+        with open(tagsfile, "w") as fp:
+            json.dump(get_tag_meta(build_info, c_tag), fp, indent=2)
 
 
 if __name__ == '__main__':
