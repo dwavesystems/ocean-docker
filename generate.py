@@ -167,19 +167,18 @@ def tags():
 
 
 @cli.command()
-@click.option('--tag', default=None, type=str,
-              help="Output meta data for image with a specific tag only.")
-def meta(tag):
-    """Output image meta data."""
+@click.argument('tags', nargs=-1)
+def meta(tags):
+    """Output image meta data for TAGS given."""
 
     build_info = get_tags(OCEAN_VERSIONS, PYTHON_VERSIONS, PLATFORM_TAGS)
-    if tag is not None:
-        meta = [get_tag_meta(build_info, tag)]
-    else:
-        meta = [get_tag_meta(build_info, tag) for tag in build_info.canonical.keys()]
+    if not tags:
+        tags = build_info.canonical.keys()
 
-    for m in meta:
-        click.echo(json.dumps(m, indent=2))
+    meta = [get_tag_meta(build_info, tag) for tag in tags]
+
+    for tagmeta in meta:
+        click.echo(json.dumps(tagmeta, indent=2))
 
 
 @cli.command()
