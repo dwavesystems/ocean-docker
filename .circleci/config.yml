@@ -7,12 +7,24 @@ jobs:
       - checkout
       - setup_remote_docker
       - run:
+          name: Install jq
+          command: apk add jq
+      - run:
           name: Build application Docker image
           command: |
-            find dockerfiles/ -name Dockerfile -exec \
+            # note: -execdir not available in busybox
+            find dockerfiles/ -name Dockerfile -exec sh -c '
+              tagfile=$(dirname "$1")/tags.json
+              c_tag=$(jq -r .canonical_tag "$tagfile")
+              a_tags=$(jq -r ".alias_tags[]" "$tagfile")
               docker build \
-                -f {} . \;
-      # - run:
-      #     name: Run tests
-      #     command: |
-      #       docker run -it --rm ocean:latest dwave --platform
+                -f "$1" . \
+                -t "ocean:$c_tag"
+              for a_tag in $a_tags; do
+                docker tag "ocean:$c_tag" "ocean:$a_tag"
+              done
+            ' sh {} \;
+      - run:
+          name: Run tests
+          command: |
+            docker run -it --rm ocean:latest dwave --platform
