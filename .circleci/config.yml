@@ -2,14 +2,31 @@ version: 2.1
 
 jobs:
   build:
+    working_directory: /ocean
+
     docker:
       - image: docker:20-git
+
     steps:
       - checkout
       - setup_remote_docker
+
       - run:
           name: Install jq
           command: apk add jq
+
+      - restore_cache:
+          keys:
+            - v1-{{ .Branch }}
+          paths:
+            - /cache/ocean.tar
+
+      - run:
+          name: Load Docker image layer cache
+          command: |
+            [ -f /cache/ocean.tar ] && docker load -i /cache/ocean.tar
+            docker images
+
       - run:
           name: Build Ocean docker images
           command: |
@@ -19,6 +36,7 @@ jobs:
               c_tag=$(jq -r .canonical_tag "$tagfile")
               a_tags=$(jq -r ".alias_tags[]" "$tagfile")
               docker build \
+                --cache-from=ocean \
                 -f "$1" . \
                 -t "ocean:$c_tag"
               for a_tag in $a_tags; do
@@ -26,7 +44,20 @@ jobs:
               done
             ' sh {} \;
 
+      - run:
+          name: Save Docker image layer cache
+          command: |
+            mkdir -p /cache
+            docker save -o /cache/ocean.tar ocean
+
+      - save_cache:
+          key: v1-{{ .Branch }}
+          paths:
+            - /cache/ocean.tar
+
   test:
+    working_directory: /ocean
+
     parameters:
       python-version:
         type: string
@@ -44,6 +75,18 @@ jobs:
     steps:
       - setup_remote_docker
 
+      - restore_cache:
+          keys:
+            - v1-{{ .Branch }}
+          paths:
+            - /cache/ocean.tar
+
+      - run:
+          name: Load Docker image layer cache
+          command: |
+            [ -f /cache/ocean.tar ] && docker load -i /cache/ocean.tar
+            docker images
+
       - run:
           name: Ocean smoke test (dwave CLI runs)
           command: |
@@ -52,7 +95,7 @@ jobs:
       - run:
           name: Verify Ocean version
           command: |
-            docker run -it --rm "ocean:$TAG" pip show dwave-ocean-sdk | grep -F "Version << parameters.ocean-version >>."
+            docker run -it --rm "ocean:$TAG" pip show dwave-ocean-sdk | grep -F "Version: << parameters.ocean-version >>"
 
       - run:
           name: Verify Python version
