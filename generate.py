@@ -215,20 +215,22 @@ def meta(tags):
 def dockerfiles(ocean_version_scale):
     """Create all Dockerfiles required to build our matrix of images."""
 
-    build_info = build.tags
-    sub_tags = build_info.canonical
+    canonical_tags = build.tags.canonical
 
-    # purge old dockerfiles
+    # purge old dockerfiles for ocean version under update
     base = './dockerfiles'
-    shutil.rmtree(base, ignore_errors=True)
+    ocean_dirs = {version_rounded(c_sub['ocean'], ocean_version_scale)
+                  for c_sub in canonical_tags.values()}
+    for ocean_dir in ocean_dirs:
+        shutil.rmtree(os.path.join(base, ocean_dir), ignore_errors=True)
 
     # load template
     template_path = 'Dockerfile-linux.template'
     with open(template_path) as fp:
         template = fp.read()
 
-    # generate Dockerfile for each canonical tag
-    for c_tag, c_sub in sub_tags.items():
+    # generate `Dockerfile` and `tags.json` for each canonical tag
+    for c_tag, c_sub in canonical_tags.items():
         click.echo(f"Processing {c_tag!r} = {c_sub!r}")
         ocean_dir = version_rounded(c_sub['ocean'], ocean_version_scale)
         python_dir = f"python{c_sub['python']}"
@@ -251,7 +253,7 @@ def dockerfiles(ocean_version_scale):
 
         click.echo(f"- writing {tagsfile!r}")
         with open(tagsfile, "w") as fp:
-            json.dump(get_tag_meta(build_info, c_tag), fp, indent=2)
+            json.dump(get_tag_meta(build.tags, c_tag), fp, indent=2)
 
 
 if __name__ == '__main__':
