@@ -18,6 +18,7 @@ tag mapped to a canonical tag.
 """
 
 import os
+import re
 import json
 import shutil
 from itertools import product
@@ -49,80 +50,104 @@ OCEAN_VERSIONS_ROUNDED = [_get_version(ocean_version_info, n+1)
 assert len(OCEAN_VERSIONS_ROUNDED) == 3
 OCEAN_VERSION_MAJOR, OCEAN_VERSION_MINOR, OCEAN_VERSION_PATCH = OCEAN_VERSIONS_ROUNDED
 
-# build a cartesian product of these subcomponents (sub-tags)
-# (`None` = use a value as defined in `CANONICAL_TAGS`, but leave out the sub-tag name)
-OCEAN_VERSIONS = {None}.union(OCEAN_VERSIONS_ROUNDED)
-PYTHON_VERSIONS = {None, '3.8', '3.9', '3.10'}
-PLATFORM_TAGS = {None, 'bullseye', 'slim', 'slim-bullseye'}
-
-# sub-tag alias map
-# note: expanded here for clarity (vs scripted)
-CANONICAL_TAGS = {
-    'ocean': {
-        None: OCEAN_VERSION,
-        OCEAN_VERSION_MAJOR: OCEAN_VERSION,
-        OCEAN_VERSION_MINOR: OCEAN_VERSION,
-        OCEAN_VERSION_PATCH: OCEAN_VERSION,
-    },
-    'python': {
-        None: '3.9'
-    },
-    'platform': {
-        None: 'bullseye',
-        'slim': 'slim-bullseye',
-    }
-}
-
-
-def make_tag(ocean, python, platform, default_tag='latest'):
-    """Form a tag name from sub-tags."""
-    if python is not None:
-        python = f"python{python}"
-
-    nonempty_subtags = list(filter(None, (ocean, python, platform)))
-    if nonempty_subtags:
-        tag = '-'.join(nonempty_subtags)
-    else:
-        tag = default_tag
-    return tag
-
-
-def tag_info(default_tag='latest', **subtags):
-    """Build a tag and canonical tag info from sub-tags.
-    Return (tag, canonical tag, canonical subtags).
-    """
-    # `subtags` key order matters! use: (ocean, python, platform)
-    tag = make_tag(**subtags)
-
-    # derive canonical sub-tag (from, possibly, an alias)
-    canonical_subtags = {k: CANONICAL_TAGS[k].get(v, v) for k, v in subtags.items()}
-    canonical_tag = make_tag(**canonical_subtags)
-
-    return namedtuple('TagInfo', 'tag canonical_tag canonical_subtags')(
-        tag, canonical_tag, canonical_subtags)
-
-
-def get_tags(ocean_versions, python_versions, platform_tags):
-    """Produce: (1) a map of canonical tags (that we need to build) to a bag of
-    alias tags; (2) canonical sub-tags for each canonical tag; and (3) a map of
-    upstream canonical tags for each tag.
-    """
-    tag_bags = defaultdict(set)   # Dict[str, Set[str]]
-    sub_tags = dict()   # Dict[str, Dict[str, str]]
-    upstream = dict()   # Dict[str, str]
-
-    for oc, py, pl in product(ocean_versions, python_versions, platform_tags):
-        info = tag_info(ocean=oc, python=py, platform=pl)
-        tag_bags[info.canonical_tag].add(info.tag)
-        sub_tags[info.canonical_tag] = info.canonical_subtags
-        upstream[info.tag] = info.canonical_tag
-
-    return namedtuple('Tags', 'bags canonical upstream')(
-        tag_bags, sub_tags, upstream)
-
-
 def version_rounded(version, scale, sep='.'):
     return sep.join((version.split(sep))[:scale+1])
+
+
+class BuildConfig:
+    DEFAULT_TAG = 'latest'
+
+    @staticmethod
+    def expand_template(obj, **context):
+        """Recursively expand string templates in build config object."""
+        subs = {
+            'ocean.major': version_rounded(context['ocean'], 0),
+            'ocean.minor': version_rounded(context['ocean'], 1),
+            'ocean.patch': version_rounded(context['ocean'], 2),
+        }
+        if isinstance(obj, str):
+            return re.sub(r"\{(?P<var>[\w.:-]+)\}", lambda m: subs[m['var']], obj)
+        elif isinstance(obj, dict):
+            return {BuildConfig.expand_template(k, **context):
+                    BuildConfig.expand_template(v, **context)
+                    for k, v in obj.items()}
+        elif isinstance(obj, list):
+            return [BuildConfig.expand_template(v, **context) for v in obj]
+        return obj
+
+    def make_tag(self, ocean, python, platform):
+        """Form a tag name from sub-tags."""
+        if python is not None:
+            python = f"python{python}"
+
+        nonempty_subtags = list(filter(None, (ocean, python, platform)))
+        if nonempty_subtags:
+            tag = '-'.join(nonempty_subtags)
+        else:
+            tag = self.DEFAULT_TAG
+        return tag
+
+    def tag_info(self, **subtags):
+        """Build a tag and canonical tag info from sub-tags.
+        Return (tag, canonical tag, canonical subtags).
+        """
+        # `subtags` key order matters! use: (ocean, python, platform)
+        tag = self.make_tag(**subtags)
+
+        # derive canonical sub-tag (from, possibly, an alias)
+        def _expand(name, value):
+            # expand defaults and aliases
+            if value is None:
+                value = self.config['defaults'][name]
+            return self.config['aliases'].get(name, {}).get(value, value)
+
+        canonical_subtags = {k: _expand(k,v) for k, v in subtags.items()}
+        canonical_tag = self.make_tag(**canonical_subtags)
+
+        return namedtuple('TagInfo', 'tag canonical_tag canonical_subtags')(
+            tag, canonical_tag, canonical_subtags)
+
+    def get_tags(self, ocean_versions, python_versions, platform_tags):
+        """Produce: (1) a map of canonical tags (that we need to build) to a bag of
+        alias tags; (2) canonical sub-tags for each canonical tag; and (3) a map of
+        upstream canonical tags for each tag.
+        """
+        tag_bags = defaultdict(set)   # Dict[str, Set[str]]
+        sub_tags = dict()   # Dict[str, Dict[str, str]]
+        upstream = dict()   # Dict[str, str]
+
+        for oc, py, pl in product(ocean_versions, python_versions, platform_tags):
+            info = self.tag_info(ocean=oc, python=py, platform=pl)
+            tag_bags[info.canonical_tag].add(info.tag)
+            sub_tags[info.canonical_tag] = info.canonical_subtags
+            upstream[info.tag] = info.canonical_tag
+
+        return namedtuple('Tags', 'bags canonical upstream')(
+            tag_bags, sub_tags, upstream)
+
+    def __init__(self, config_file, **context):
+        with open(config_file) as fp:
+            config = json.load(fp)
+
+        self.config = BuildConfig.expand_template(config, **context)
+
+        self.tags = self.get_tags(
+            self.ocean_versions, self.python_versions, self.platform_tags)
+
+    @property
+    def ocean_versions(self):
+        return self.config['matrix']['ocean']
+
+    @property
+    def python_versions(self):
+        return self.config['matrix']['python']
+
+    @property
+    def platform_tags(self):
+        return self.config['matrix']['platform']
+
+
+build = BuildConfig('build.json', ocean=OCEAN_VERSION)
 
 
 def get_tag_meta(build_info, tag):
@@ -149,13 +174,13 @@ def cli():
 def tags():
     """Print tags to build for OCEAN_VERSION from environment."""
 
-    tag_bags = get_tags(OCEAN_VERSIONS, PYTHON_VERSIONS, PLATFORM_TAGS).bags
+    tag_bags = build.tags.bags
     all_tags = set(tag_bags.keys()).union(*tag_bags.values())
 
     print(f"===\nmatrix\n===\n"
-          f"- ocean: {', '.join(filter(None, OCEAN_VERSIONS))}\n"
-          f"- python: {', '.join(filter(None, PYTHON_VERSIONS))}\n"
-          f"- platform: {', '.join(filter(None, PLATFORM_TAGS))}\n")
+          f"- ocean: {', '.join(filter(None, build.ocean_versions))}\n"
+          f"- python: {', '.join(filter(None, build.python_versions))}\n"
+          f"- platform: {', '.join(filter(None, build.platform_tags))}\n")
 
     print("===\ncanonical images/tags:", len(tag_bags), '\n===')
     for canonical, aliases in tag_bags.items():
@@ -171,7 +196,7 @@ def tags():
 def meta(tags):
     """Output image meta data for TAGS given."""
 
-    build_info = get_tags(OCEAN_VERSIONS, PYTHON_VERSIONS, PLATFORM_TAGS)
+    build_info = build.tags
     if not tags:
         tags = build_info.canonical.keys()
 
@@ -187,7 +212,7 @@ def meta(tags):
 def dockerfiles(ocean_version_scale):
     """Create all Dockerfiles required to build our matrix of images."""
 
-    build_info = get_tags(OCEAN_VERSIONS, PYTHON_VERSIONS, PLATFORM_TAGS)
+    build_info = build.tags
     sub_tags = build_info.canonical
 
     # purge old dockerfiles
