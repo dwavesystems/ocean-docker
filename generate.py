@@ -160,7 +160,7 @@ def get_tag_meta(build_info, tag):
 
     return {
         'canonical_tag': canonical_tag,
-        'alias_tags': list(build_info.bags[canonical_tag].difference([canonical_tag])),
+        'alias_tags': sorted(build_info.bags[canonical_tag].difference([canonical_tag])),
         'subtags': build_info.canonical[canonical_tag],
     }
 
