@@ -177,10 +177,12 @@ def tags():
     tag_bags = build.tags.bags
     all_tags = set(tag_bags.keys()).union(*tag_bags.values())
 
+    _alias = lambda cat, tag: build.config['aliases'].get(cat, {}).get(tag)
+    _append = lambda cat, tag: f"{tag} (=={_alias(cat, tag)})" if _alias(cat, tag) else tag
     print(f"===\nmatrix\n===\n"
-          f"- ocean: {', '.join(filter(None, build.ocean_versions))}\n"
-          f"- python: {', '.join(filter(None, build.python_versions))}\n"
-          f"- platform: {', '.join(filter(None, build.platform_tags))}\n")
+          f"- ocean: {', '.join(_append('ocean', v) for v in build.ocean_versions if v)}\n"
+          f"- python: {', '.join(_append('python', v) for v in build.python_versions if v)}\n"
+          f"- platform: {', '.join(_append('platform', v) for v in build.platform_tags if v)}\n")
 
     print("===\ncanonical images/tags:", len(tag_bags), '\n===')
     for canonical, aliases in tag_bags.items():
