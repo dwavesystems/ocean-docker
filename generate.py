@@ -18,6 +18,7 @@ tag mapped to a canonical tag.
 """
 
 import os
+import json
 import shutil
 from itertools import product
 from collections import defaultdict, namedtuple
@@ -72,7 +73,9 @@ CANONICAL_TAGS = {
     }
 }
 
+
 def make_tag(ocean, python, platform, default_tag='latest'):
+    """Form a tag name from sub-tags."""
     if python is not None:
         python = f"python{python}"
 
@@ -85,7 +88,8 @@ def make_tag(ocean, python, platform, default_tag='latest'):
 
 
 def tag_info(default_tag='latest', **subtags):
-    """Build a tag from sub-tags. Return (tag, canonical tag, canonical subtags).
+    """Build a tag and canonical tag info from sub-tags.
+    Return (tag, canonical tag, canonical subtags).
     """
     # `subtags` key order matters! use: (ocean, python, platform)
     tag = make_tag(**subtags)
@@ -94,38 +98,58 @@ def tag_info(default_tag='latest', **subtags):
     canonical_subtags = {k: CANONICAL_TAGS[k].get(v, v) for k, v in subtags.items()}
     canonical_tag = make_tag(**canonical_subtags)
 
-    return namedtuple('BuildInfo', 'tag canonical_tag canonical_subtags')(
+    return namedtuple('TagInfo', 'tag canonical_tag canonical_subtags')(
         tag, canonical_tag, canonical_subtags)
 
 
 def get_tags(ocean_versions, python_versions, platform_tags):
     """Produce: (1) a map of canonical tags (that we need to build) to a bag of
-    alias tags; and (2) sub-tags for each canonical tag.
+    alias tags; (2) canonical sub-tags for each canonical tag; and (3) a map of
+    upstream canonical tags for each tag.
     """
     tag_bags = defaultdict(set)   # Dict[str, Set[str]]
     sub_tags = dict()   # Dict[str, Dict[str, str]]
+    upstream = dict()   # Dict[str, str]
 
     for oc, py, pl in product(ocean_versions, python_versions, platform_tags):
         info = tag_info(ocean=oc, python=py, platform=pl)
         tag_bags[info.canonical_tag].add(info.tag)
         sub_tags[info.canonical_tag] = info.canonical_subtags
+        upstream[info.tag] = info.canonical_tag
 
-    return tag_bags, sub_tags
+    return namedtuple('Tags', 'bags canonical upstream')(
+        tag_bags, sub_tags, upstream)
 
 
 def version_rounded(version, scale, sep='.'):
     return sep.join((version.split(sep))[:scale+1])
 
 
+def get_tag_meta(build_info, tag):
+    if tag in build_info.canonical:
+        canonical_tag = tag
+    elif tag in build_info.upstream:
+        canonical_tag = build_info.upstream[tag]
+    else:
+        raise ValueError('Canonical tag not found')
+
+    return {
+        'canonical_tag': canonical_tag,
+        'alias_tags': list(build_info.bags[canonical_tag].difference([canonical_tag])),
+        'subtags': build_info.canonical[canonical_tag],
+    }
+
+
 @click.group()
 def cli():
     """Generate tags or dockerfiles."""
+
 
 @cli.command()
 def tags():
     """Print tags to build for OCEAN_VERSION from environment."""
 
-    tag_bags, _ = get_tags(OCEAN_VERSIONS, PYTHON_VERSIONS, PLATFORM_TAGS)
+    tag_bags = get_tags(OCEAN_VERSIONS, PYTHON_VERSIONS, PLATFORM_TAGS).bags
     all_tags = set(tag_bags.keys()).union(*tag_bags.values())
 
     print(f"===\nmatrix\n===\n"
@@ -135,11 +159,27 @@ def tags():
 
     print("===\ncanonical images/tags:", len(tag_bags), '\n===')
     for canonical, aliases in tag_bags.items():
-        print(f'{canonical}:\n  {", ".join(sorted(aliases.difference(canonical)))}\n')
+        print(f'{canonical}:\n  {", ".join(sorted(aliases.difference([canonical])))}\n')
 
     print(f"===\nall tags: {len(all_tags)}\n===")
     for tag in sorted(all_tags):
         print(tag)
+
+
+@cli.command()
+@click.argument('tags', nargs=-1)
+def meta(tags):
+    """Output image meta data for TAGS given."""
+
+    build_info = get_tags(OCEAN_VERSIONS, PYTHON_VERSIONS, PLATFORM_TAGS)
+    if not tags:
+        tags = build_info.canonical.keys()
+
+    meta = [get_tag_meta(build_info, tag) for tag in tags]
+
+    for tagmeta in meta:
+        click.echo(json.dumps(tagmeta, indent=2))
+
 
 @cli.command()
 @click.option('--ocean-version-scale', default=1, type=int,
@@ -147,7 +187,8 @@ def tags():
 def dockerfiles(ocean_version_scale):
     """Create all Dockerfiles required to build our matrix of images."""
 
-    _, sub_tags = get_tags(OCEAN_VERSIONS, PYTHON_VERSIONS, PLATFORM_TAGS)
+    build_info = get_tags(OCEAN_VERSIONS, PYTHON_VERSIONS, PLATFORM_TAGS)
+    sub_tags = build_info.canonical
 
     # purge old dockerfiles
     base = './dockerfiles'
@@ -167,6 +208,7 @@ def dockerfiles(ocean_version_scale):
 
         dir = os.path.join(base, ocean_dir, python_dir, platform)
         target = os.path.join(dir, 'Dockerfile')
+        tagsfile = os.path.join(dir, 'tags.json')
         os.makedirs(dir)
 
         dockerfile = chevron.render(template, data=dict(
@@ -178,6 +220,10 @@ def dockerfiles(ocean_version_scale):
         click.echo(f"- writing {target!r}")
         with open(target, "w") as fp:
             fp.write(dockerfile)
+
+        click.echo(f"- writing {tagsfile!r}")
+        with open(tagsfile, "w") as fp:
+            json.dump(get_tag_meta(build_info, c_tag), fp, indent=2)
 
 
 if __name__ == '__main__':
