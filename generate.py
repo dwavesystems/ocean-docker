@@ -75,7 +75,8 @@ class BuildConfig:
             return [BuildConfig.expand_template(v, **context) for v in obj]
         return obj
 
-    def make_tag(self, ocean, python, platform):
+    @classmethod
+    def make_tag(cls, ocean, python, platform):
         """Form a tag name from sub-tags."""
         if python is not None:
             python = f"python{python}"
@@ -84,7 +85,7 @@ class BuildConfig:
         if nonempty_subtags:
             tag = '-'.join(nonempty_subtags)
         else:
-            tag = self.DEFAULT_TAG
+            tag = cls.DEFAULT_TAG
         return tag
 
     def tag_info(self, **subtags):
@@ -209,7 +210,7 @@ def meta(tags):
 
 
 @cli.command()
-@click.option('--ocean-version-scale', default=1, type=int,
+@click.option('--ocean-version-scale', default=0, type=int,
               help='Number of Ocean version components after major, in directory name.')
 def dockerfiles(ocean_version_scale):
     """Create all Dockerfiles required to build our matrix of images."""
