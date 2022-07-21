@@ -26,29 +26,15 @@ from collections import defaultdict, namedtuple
 
 import click
 import chevron
+import requests
 
 
-# ocean version under build
-# TODO: get latest from github releases
-OCEAN_VERSION = os.getenv('OCEAN_VERSION')
+def get_latest_ocean_version():
+    url = 'https://api.github.com/repos/dwavesystems/dwave-ocean-sdk/releases'
+    releases = requests.get(url, params=dict(per_page=50, page=1)).json()
+    tags = [release['tag_name'] for release in releases]
+    return max(tags, key=lambda tag: tag.split('.'))
 
-if OCEAN_VERSION is None:
-    print("Please specify Ocean version under build with OCEAN_VERSION env var.")
-    exit(1)
-
-# ocean version under build, as named tuple
-ocean_version_info = namedtuple('Version', 'major minor patch')(*OCEAN_VERSION.split('.'))
-
-def _get_version(version_info, significant_parts=None):
-    if significant_parts is None:
-        significant_parts = len(version_info)
-    return '.'.join(version_info[:significant_parts])
-
-OCEAN_VERSIONS_ROUNDED = [_get_version(ocean_version_info, n+1)
-                          for n in range(len(ocean_version_info))]
-
-assert len(OCEAN_VERSIONS_ROUNDED) == 3
-OCEAN_VERSION_MAJOR, OCEAN_VERSION_MINOR, OCEAN_VERSION_PATCH = OCEAN_VERSIONS_ROUNDED
 
 def version_rounded(version, scale, sep='.'):
     return sep.join((version.split(sep))[:scale+1])
@@ -148,6 +134,11 @@ class BuildConfig:
         return self.config['matrix']['platform']
 
 
+# ocean version under build
+OCEAN_VERSION = os.getenv('OCEAN_VERSION', get_latest_ocean_version())
+click.echo(f"Using Ocean version {OCEAN_VERSION}")
+
+# TODO: move under cli command(s), build file as option
 build = BuildConfig('build.json', ocean=OCEAN_VERSION)
 
 
