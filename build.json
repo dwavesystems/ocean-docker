@@ -1,0 +1,21 @@
+{
+    "matrix": {
+        "ocean": [null, "{ocean.major}", "{ocean.minor}", "{ocean.patch}"],
+        "python": [null, "3.8", "3.9", "3.10"],
+        "platform": [null, "bullseye", "slim-bullseye", "slim"]
+    },
+    "aliases": {
+        "ocean": {
+            "{ocean.major}": "{ocean.patch}",
+            "{ocean.minor}": "{ocean.patch}"
+        },
+        "platform": {
+            "slim": "slim-bullseye"
+        }
+    },
+    "defaults": {
+        "ocean": "{ocean.patch}",
+        "python": "3.9",
+        "platform": "bullseye"
+    }
+}
