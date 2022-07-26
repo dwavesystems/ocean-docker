@@ -6,7 +6,7 @@ with quantum computers.
 
 ## Build Matrix
 
-- Ocean: `5.3.0`
+- Ocean: [`latest`](https://github.com/dwavesystems/dwave-ocean-sdk/releases)
 - Python: `3.8`, `3.9`, `3.10`
 - Platform: [`bullseye`](https://wiki.debian.org/DebianBullseye), `slim` (minimal bullseye)
 
