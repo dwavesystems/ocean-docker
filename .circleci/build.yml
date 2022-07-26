@@ -1,0 +1,181 @@
+version: 2.1
+
+parameters:
+  run-build:
+    type: boolean
+    default: false
+
+jobs:
+  build:
+    working_directory: /ocean
+
+    docker:
+      - image: docker:20-git
+
+    steps:
+      - checkout
+      - setup_remote_docker
+
+      - run:
+          name: Install jq
+          command: apk add jq
+
+      - restore_cache:
+          keys:
+            - v1-{{ .Branch }}
+          paths:
+            - /cache/ocean.tar
+
+      - run:
+          name: Load Docker image layer cache
+          command: |
+            [ -f /cache/ocean.tar ] && docker load -i /cache/ocean.tar
+            docker images
+
+      - run:
+          name: Build Ocean docker images
+          command: |
+            # note: -execdir not available in busybox, nor is bash
+            find dockerfiles/ -name Dockerfile -exec sh -c '
+              tagfile=$(dirname "$1")/tags.json
+              c_tag=$(jq -r .canonical_tag "$tagfile")
+              a_tags=$(jq -r ".alias_tags[]" "$tagfile")
+              docker build \
+                --cache-from=ocean \
+                -f "$1" . \
+                -t "ocean:$c_tag"
+              for a_tag in $a_tags; do
+                docker tag "ocean:$c_tag" "ocean:$a_tag"
+              done
+            ' sh {} \;
+
+      - run:
+          name: Save Docker image layer cache
+          command: |
+            mkdir -p /cache
+            docker save -o /cache/ocean.tar ocean
+
+      - save_cache:
+          key: v1-{{ .Branch }}
+          paths:
+            - /cache/ocean.tar
+
+  test:
+    working_directory: /ocean
+
+    parameters:
+      python-version:
+        type: string
+      ocean-version:
+        type: string
+      platform:
+        type: string
+
+    docker:
+      - image: docker:latest
+
+    environment:
+      TAG: "<< parameters.ocean-version >>-python<< parameters.python-version >>-<< parameters.platform >>"
+
+    steps:
+      - setup_remote_docker
+
+      - restore_cache:
+          keys:
+            - v1-{{ .Branch }}
+          paths:
+            - /cache/ocean.tar
+
+      - run:
+          name: Load Docker image layer cache
+          command: |
+            [ -f /cache/ocean.tar ] && docker load -i /cache/ocean.tar
+            docker images
+
+      - run:
+          name: Ocean smoke test (dwave CLI runs)
+          command: |
+            docker run -it --rm "ocean:$TAG" dwave --platform
+
+      - run:
+          name: Verify Ocean version
+          command: |
+            docker run -it --rm "ocean:$TAG" pip show dwave-ocean-sdk | grep -F "Version: << parameters.ocean-version >>"
+
+      - run:
+          name: Verify Python version
+          command: |
+            docker run -it --rm "ocean:$TAG" python -V | grep -F "Python << parameters.python-version >>."
+
+      - run:
+          name: Verify platform
+          command: |
+            # limited scope for now (verify it's debian base image)
+            docker run -it --rm "ocean:$TAG" grep -F bullseye /etc/os-release
+
+  build-multi-arch:
+    working_directory: /ocean
+
+    docker:
+      - image: docker:20-git
+
+    steps:
+      - checkout
+      - setup_remote_docker
+
+      - run:
+          name: Install jq
+          command: apk add jq
+
+      - run:
+          name: Setup QEMU
+          command: |
+            docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+
+      - run:
+          name: Login to DockerHub
+          command: |
+            echo "$DOCKER_ACCESS_TOKEN" | docker login -u "$DOCKER_USERNAME" --password-stdin
+
+      - run:
+          name: Build
+          command: |
+            docker context create ocean
+            docker buildx create --use ocean --platform linux/amd64,linux/arm64
+            find dockerfiles/ -name Dockerfile -exec sh -c '
+              tagfile=$(dirname "$1")/tags.json
+              c_tag=$(jq -r .canonical_tag "$tagfile")
+              a_tags=$(jq -r ".alias_tags[]" "$tagfile")
+              expanded_a_tags=$(for tag in $a_tags; do echo --tag "dwavesys/ocean:$tag"; done)
+              docker buildx build \
+                --platform linux/amd64,linux/arm64 \
+                --push \
+                --tag "dwavesys/ocean:$c_tag" \
+                $expanded_a_tags \
+                . -f "$1"
+            ' sh {} \;
+
+workflows:
+  build:
+    when: << pipeline.parameters.run-build >>
+    jobs:
+      - build-multi-arch
+
+  # build-and-test:
+  #   jobs:
+  #     - build-multi-arch:
+  #         filters: &always-run
+  #           tags:
+  #             only: /.*/
+
+  #     - test:
+  #         name: "test ocean:<< matrix.ocean-version >>-python<< matrix.python-version >>-<< matrix.platform >>"
+  #         requires:
+  #           - build
+  #         matrix:
+  #           parameters:
+  #             python-version: ["3.8", "3.9", "3.10"]
+  #             ocean-version: ["5.3.0", "5.3", "5"]
+  #             platform: ["bullseye", "slim-bullseye", "slim"]
+  #         filters:
+  #           <<: *always-run
