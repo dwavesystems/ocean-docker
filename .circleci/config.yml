@@ -108,23 +108,65 @@ jobs:
             # limited scope for now (verify it's debian base image)
             docker run -it --rm "ocean:$TAG" grep -F bullseye /etc/os-release
 
+  build-multi-arch:
+    working_directory: /ocean
+
+    docker:
+      - image: docker:20-git
+
+    steps:
+      - checkout
+      - setup_remote_docker
+
+      - run:
+          name: Install jq
+          command: apk add jq
+
+      - run:
+          name: Setup QEMU
+          command: |
+            docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+
+      - run:
+          name: Login to DockerHub
+          command: |
+            echo "$DOCKER_ACCESS_TOKEN" | docker login -u "$DOCKER_USERNAME" --password-stdin
+
+      - run:
+          name: Build
+          command: |
+            docker context create ocean
+            docker buildx create --use ocean --platform linux/amd64,linux/arm64
+            find dockerfiles/ -name Dockerfile -exec sh -c '
+              tagfile=$(dirname "$1")/tags.json
+              c_tag=$(jq -r .canonical_tag "$tagfile")
+              a_tags=$(jq -r ".alias_tags[]" "$tagfile")
+              expanded_a_tags=$(for tag in $a_tags; do echo --tag "dwavesys/ocean:$tag"; done)
+              docker buildx build \
+                --platform linux/amd64,linux/arm64 \
+                --push \
+                --tag "dwavesys/ocean:$c_tag" \
+                $expanded_a_tags \
+                . -f "$1"
+            ' sh {} \;
+
 
 workflows:
   build-and-test:
     jobs:
-      - build:
+      - build-multi-arch:
           filters: &always-run
             tags:
               only: /.*/
 
-      - test:
-          name: "test ocean:<< matrix.ocean-version >>-python<< matrix.python-version >>-<< matrix.platform >>"
-          requires:
-            - build
-          matrix:
-            parameters:
-              python-version: ["3.8", "3.9", "3.10"]
-              ocean-version: ["5.3.0", "5.3", "5"]
-              platform: ["bullseye", "slim-bullseye", "slim"]
-          filters:
-            <<: *always-run
+      # - test:
+      #     name: "test ocean:<< matrix.ocean-version >>-python<< matrix.python-version >>-<< matrix.platform >>"
+      #     requires:
+      #       - build
+      #     matrix:
+      #       parameters:
+      #         python-version: ["3.8", "3.9", "3.10"]
+      #         ocean-version: ["5.3.0", "5.3", "5"]
+      #         platform: ["bullseye", "slim-bullseye", "slim"]
+      #     filters:
+      #       <<: *always-run
