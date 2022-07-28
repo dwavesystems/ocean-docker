@@ -221,7 +221,7 @@ workflows:
     when: << pipeline.parameters.run-build >>
     jobs:
       - build-linux-amd64:
-          name: "linux-amd64: << matrix.path >>"
+          name: linux-amd64-<< matrix.path >>
           matrix:
             parameters:
               # list manually for now; long-term, we want to auto-generate this list from the main runner
@@ -235,25 +235,25 @@ workflows:
               ]
 
       - build-linux-arm64:
-          name: "linux-arm64: << matrix.path >>"
+          name: linux-arm64-<< matrix.path >>
           matrix:
             parameters:
               path: *dockerfiles
 
       - create-multi-arch:
-          name: "create-multi-arch: << matrix.path >>"
+          name: create-multi-arch-<< matrix.path >>
           requires:
-            - build-linux-amd64
-            - build-linux-arm64
+            - linux-amd64-<< matrix.path >>
+            - linux-arm64-<< matrix.path >>
           matrix:
             parameters:
               path: *dockerfiles
               architectures: ["amd64,arm64"]
 
       - deploy:
-          name: "deploy: << matrix.path >>"
+          name: deploy-<< matrix.path >>
           requires:
-            - create-multi-arch
+            - create-multi-arch-<< matrix.path >>
           matrix:
             parameters:
               path: *dockerfiles
