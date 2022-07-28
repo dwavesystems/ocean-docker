@@ -146,7 +146,7 @@ jobs:
       - run: *login-dockerhub
       - run: *push-canonical-image
 
-  upload-manifest-list:
+  create-multi-arch:
     parameters:
       path:
         type: string
@@ -182,11 +182,53 @@ jobs:
 
             docker manifest push "$tag"
 
+  deploy:
+    parameters:
+      path:
+        type: string
+        description: >
+          Build context path.
+
+    docker:
+      - image: cimg/base:stable
+
+    environment:
+      <<: *global-environment
+
+    steps:
+      - checkout
+
+      # - setup_remote_docker:
+      #     docker_layer_caching: true
+
+      # - run:
+      #     name: Install jq
+      #     command: apk add jq
+
+      - run: *login-dockerhub
+
+      - run:
+          name: Upload official multi-arch images
+          command: |
+            tagfile="<< parameters.path >>/tags.json"
+            c_tag=$(jq -r .canonical_tag "$tagfile")
+            a_tags=$(jq -r ".alias_tags[]" "$tagfile")
+            src_tag="$DOCKER_REPO:$CIRCLE_SHA1-$c_tag"
+
+            # canonical
+            docker buildx imagetools create -t "$DOCKER_REPO:$c_tag" "$src_tag"
+
+            # aliases
+            for a_tag in $a_tags; do
+              docker buildx imagetools create -t "$DOCKER_REPO:$a_tag" "$src_tag"
+            done
+
 workflows:
   build-multi-arch:
     when: << pipeline.parameters.run-build >>
     jobs:
       - build-linux-amd64:
+          name: "linux-amd64: << matrix.path >>"
           matrix:
             parameters:
               # list manually for now; long-term, we want to auto-generate this list from the main runner
@@ -200,11 +242,13 @@ workflows:
               ]
 
       - build-linux-arm64:
+          name: "linux-arm64: << matrix.path >>"
           matrix:
             parameters:
               path: *dockerfiles
 
-      - upload-manifest-list:
+      - create-multi-arch:
+          name: "create-multi-arch: << matrix.path >>"
           requires:
             - build-linux-amd64
             - build-linux-arm64
@@ -212,3 +256,11 @@ workflows:
             parameters:
               path: *dockerfiles
               architectures: ["amd64,arm64"]
+
+      - deploy:
+          name: "deploy: << matrix.path >>"
+          requires:
+            - create-multi-arch
+          matrix:
+            parameters:
+              path: *dockerfiles
