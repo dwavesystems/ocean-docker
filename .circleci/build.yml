@@ -155,14 +155,20 @@ workflows:
   build-multi-arch:
     when: << pipeline.parameters.run-build >>
     jobs:
-      # temporary
       - build-linux-amd64:
           matrix:
             parameters:
-              path: ["dockerfiles/5/python3.10/bullseye/", "dockerfiles/5/python3.10/slim-bullseye/"]
+              # list manually for now; long-term, we want to auto-generate this list from the main runner
+              path: &dockerfiles [
+                "dockerfiles/5/python3.8/bullseye",
+                "dockerfiles/5/python3.8/slim-bullseye",
+                "dockerfiles/5/python3.9/bullseye",
+                "dockerfiles/5/python3.9/slim-bullseye",
+                "dockerfiles/5/python3.10/bullseye",
+                "dockerfiles/5/python3.10/slim-bullseye"
+              ]
 
       - build-linux-arm64:
           matrix:
             parameters:
-              path: ["dockerfiles/5/python3.10/bullseye/", "dockerfiles/5/python3.10/slim-bullseye/"]
-
+              path: *dockerfiles
