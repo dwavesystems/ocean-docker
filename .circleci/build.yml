@@ -114,14 +114,13 @@ jobs:
           command: |
             echo "$DOCKER_ACCESS_TOKEN" | docker login -u "$DOCKER_USERNAME" --password-stdin
 
-      - run: &push-image
-          name: Push image with aliases to DockerHub
+      - run: &push-canonical-image
+          name: Push canonical image to DockerHub
           command: |
             tagfile="<< parameters.path >>/tags.json"
-
             c_tag=$(jq -r .canonical_tag "$tagfile")
-            tag="$DOCKER_REPO:$CIRCLE_SHA1-$c_tag-$ARCH"
 
+            tag="$DOCKER_REPO:$CIRCLE_SHA1-$c_tag-$ARCH"
             docker push "$tag"
 
   build-linux-arm64:
@@ -142,14 +141,46 @@ jobs:
 
     steps:
       - checkout
-
       - run: *build-canonical-image
-
       - run: *verify-canonical-image
+      - run: *login-dockerhub
+      - run: *push-canonical-image
+
+  upload-manifest-list:
+    parameters:
+      path:
+        type: string
+        description: >
+          Build context path.
+      architectures:
+        type: string
+        description: >
+          Comma-separated (no space) list of architectures (codes) to build.
+
+    docker:
+      # all we need is bash and docker
+      - image: cimg/base:stable
+
+    environment:
+      <<: *global-environment
+
+    steps:
+      - checkout
 
       - run: *login-dockerhub
 
-      - run: *push-image
+      - run:
+          name: Upload manifest list to DockerHub
+          command: |
+            tagfile="<< parameters.path >>/tags.json"
+            c_tag=$(jq -r .canonical_tag "$tagfile")
+            tag="$DOCKER_REPO:$CIRCLE_SHA1-$c_tag"
+
+            docker manifest create \
+              "$tag" \
+              "$tag-"{<< parameters.architectures >>}
+
+            docker manifest push "$tag"
 
 workflows:
   build-multi-arch:
@@ -172,3 +203,12 @@ workflows:
           matrix:
             parameters:
               path: *dockerfiles
+
+      - upload-manifest-list:
+          requires:
+            - build-linux-amd64
+            - build-linux-arm64
+          matrix:
+            parameters:
+              path: *dockerfiles
+              architectures: ["amd64,arm64"]
