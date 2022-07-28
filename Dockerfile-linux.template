@@ -6,18 +6,16 @@
 
 FROM python:{{python_version}}-{{distribution_tag}}
 
-{{^is_slim}}
 RUN apt-get update \
     && apt-get install -yq --no-install-recommends \
-        build-essential \
+        build-essential \{{^is_slim}}
         man-db \
         curl \
         htop \
         less \
         git \
-        vim \
+        vim \{{/is_slim}}
     && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/*
-{{/is_slim}}
 
 RUN pip install --no-cache-dir \
         dwave-ocean-sdk=={{ocean_version}} \
@@ -27,6 +25,6 @@ RUN pip install --no-cache-dir \
 RUN pip install --no-cache-dir \
         ipython \
     && rm -rf /tmp/*
-{{/is_slim}}
 
+{{/is_slim}}
 CMD ["python"]

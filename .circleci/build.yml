@@ -5,177 +5,216 @@ parameters:
     type: boolean
     default: false
 
+environment: &global-environment
+  DOCKER_REPO: dwavesys/ocean
+
 jobs:
-  build:
-    working_directory: /ocean
+  build-linux-amd64:
+    parameters:
+      path:
+        type: string
+        description: >
+          Build context path.
 
     docker:
       - image: docker:20-git
-
-    steps:
-      - checkout
-      - setup_remote_docker
-
-      - run:
-          name: Install jq
-          command: apk add jq
-
-      - restore_cache:
-          keys:
-            - v1-{{ .Branch }}
-          paths:
-            - /cache/ocean.tar
-
-      - run:
-          name: Load Docker image layer cache
-          command: |
-            [ -f /cache/ocean.tar ] && docker load -i /cache/ocean.tar
-            docker images
-
-      - run:
-          name: Build Ocean docker images
-          command: |
-            # note: -execdir not available in busybox, nor is bash
-            find dockerfiles/ -name Dockerfile -exec sh -c '
-              tagfile=$(dirname "$1")/tags.json
-              c_tag=$(jq -r .canonical_tag "$tagfile")
-              a_tags=$(jq -r ".alias_tags[]" "$tagfile")
-              docker build \
-                --cache-from=ocean \
-                -f "$1" . \
-                -t "ocean:$c_tag"
-              for a_tag in $a_tags; do
-                docker tag "ocean:$c_tag" "ocean:$a_tag"
-              done
-            ' sh {} \;
-
-      - run:
-          name: Save Docker image layer cache
-          command: |
-            mkdir -p /cache
-            docker save -o /cache/ocean.tar ocean
-
-      - save_cache:
-          key: v1-{{ .Branch }}
-          paths:
-            - /cache/ocean.tar
-
-  test:
-    working_directory: /ocean
-
-    parameters:
-      python-version:
-        type: string
-      ocean-version:
-        type: string
-      platform:
-        type: string
-
-    docker:
-      - image: docker:latest
 
     environment:
-      TAG: "<< parameters.ocean-version >>-python<< parameters.python-version >>-<< parameters.platform >>"
-
-    steps:
-      - setup_remote_docker
-
-      - restore_cache:
-          keys:
-            - v1-{{ .Branch }}
-          paths:
-            - /cache/ocean.tar
-
-      - run:
-          name: Load Docker image layer cache
-          command: |
-            [ -f /cache/ocean.tar ] && docker load -i /cache/ocean.tar
-            docker images
-
-      - run:
-          name: Ocean smoke test (dwave CLI runs)
-          command: |
-            docker run -it --rm "ocean:$TAG" dwave --platform
-
-      - run:
-          name: Verify Ocean version
-          command: |
-            docker run -it --rm "ocean:$TAG" pip show dwave-ocean-sdk | grep -F "Version: << parameters.ocean-version >>"
-
-      - run:
-          name: Verify Python version
-          command: |
-            docker run -it --rm "ocean:$TAG" python -V | grep -F "Python << parameters.python-version >>."
-
-      - run:
-          name: Verify platform
-          command: |
-            # limited scope for now (verify it's debian base image)
-            docker run -it --rm "ocean:$TAG" grep -F bullseye /etc/os-release
-
-  build-multi-arch:
-    working_directory: /ocean
-
-    docker:
-      - image: docker:20-git
+      <<: *global-environment
+      ARCH: amd64
 
     steps:
       - checkout
-      - setup_remote_docker
+
+      - setup_remote_docker:
+          docker_layer_caching: true
 
       - run:
           name: Install jq
           command: apk add jq
 
-      - run:
-          name: Setup QEMU
+      - run: &build-canonical-image
+          name: Build image
           command: |
-            docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+            tagfile="<< parameters.path >>/tags.json"
 
-      - run:
+            c_tag=$(jq -r .canonical_tag "$tagfile")
+            tag="$DOCKER_REPO:$CIRCLE_SHA1-$c_tag-$ARCH"
+
+            docker build "<< parameters.path >>" -t "$tag"
+
+      - run: &verify-canonical-image
+          name: Verify image matches specs
+          command: |
+            tagfile="<< parameters.path >>/tags.json"
+            c_tag=$(jq -r .canonical_tag "$tagfile")
+            tag="$DOCKER_REPO:$CIRCLE_SHA1-$c_tag-$ARCH"
+
+            ocean_ver=$(jq -r .subtags.ocean "$tagfile")
+            python_ver=$(jq -r .subtags.python "$tagfile")
+            platform=$(jq -r .subtags.platform "$tagfile")
+
+            echo Ocean smoke test
+            docker run -it --rm "$tag" dwave --platform
+
+            echo Verify Ocean version
+            docker run -it --rm "$tag" pip show dwave-ocean-sdk | grep -F "Version: $ocean_ver"
+
+            echo Verify Python version
+            docker run -it --rm "$tag" python -V | grep -F "Python $python_ver."
+
+            echo Verify platform
+            # limited scope for now (verify it's debian base image)
+            docker run -it --rm "$tag" grep -F bullseye /etc/os-release
+
+      - run: &login-dockerhub
           name: Login to DockerHub
           command: |
             echo "$DOCKER_ACCESS_TOKEN" | docker login -u "$DOCKER_USERNAME" --password-stdin
 
-      - run:
-          name: Build
+      - run: &push-canonical-image
+          name: Push canonical image to DockerHub
           command: |
-            docker context create ocean
-            docker buildx create --use ocean --platform linux/amd64,linux/arm64
-            find dockerfiles/ -name Dockerfile -exec sh -c '
-              tagfile=$(dirname "$1")/tags.json
-              c_tag=$(jq -r .canonical_tag "$tagfile")
-              a_tags=$(jq -r ".alias_tags[]" "$tagfile")
-              expanded_a_tags=$(for tag in $a_tags; do echo --tag "dwavesys/ocean:$tag"; done)
-              docker buildx build \
-                --platform linux/amd64,linux/arm64 \
-                --push \
-                --tag "dwavesys/ocean:$c_tag" \
-                $expanded_a_tags \
-                . -f "$1"
-            ' sh {} \;
+            tagfile="<< parameters.path >>/tags.json"
+            c_tag=$(jq -r .canonical_tag "$tagfile")
+
+            tag="$DOCKER_REPO:$CIRCLE_SHA1-$c_tag-$ARCH"
+            docker push "$tag"
+
+  build-linux-arm64:
+    parameters:
+      path:
+        type: string
+        description: >
+          Build context path.
+
+    machine:
+      image: ubuntu-2004:202101-01
+
+    resource_class: arm.medium
+
+    environment:
+      <<: *global-environment
+      ARCH: arm64
+
+    steps:
+      - checkout
+      - run: *build-canonical-image
+      - run: *verify-canonical-image
+      - run: *login-dockerhub
+      - run: *push-canonical-image
+
+  create-multi-arch:
+    parameters:
+      path:
+        type: string
+        description: >
+          Build context path.
+      architectures:
+        type: string
+        description: >
+          Comma-separated (no space) list of architectures (codes) to build.
+
+    docker:
+      # all we need is bash and docker
+      - image: cimg/base:stable
+
+    environment:
+      <<: *global-environment
+
+    steps:
+      - checkout
+
+      - run: *login-dockerhub
+
+      - run:
+          name: Upload manifest list to DockerHub
+          command: |
+            tagfile="<< parameters.path >>/tags.json"
+            c_tag=$(jq -r .canonical_tag "$tagfile")
+            tag="$DOCKER_REPO:$CIRCLE_SHA1-$c_tag"
+
+            docker manifest create \
+              "$tag" \
+              "$tag-"{<< parameters.architectures >>}
+
+            docker manifest push "$tag"
+
+  deploy:
+    parameters:
+      path:
+        type: string
+        description: >
+          Build context path.
+
+    docker:
+      - image: cimg/base:stable
+
+    environment:
+      <<: *global-environment
+
+    steps:
+      - checkout
+
+      - run: *login-dockerhub
+
+      - run:
+          name: Upload official multi-arch images
+          command: |
+            tagfile="<< parameters.path >>/tags.json"
+            c_tag=$(jq -r .canonical_tag "$tagfile")
+            a_tags=$(jq -r ".alias_tags[]" "$tagfile")
+            src_tag="$DOCKER_REPO:$CIRCLE_SHA1-$c_tag"
+
+            # canonical
+            docker buildx imagetools create -t "$DOCKER_REPO:$c_tag" "$src_tag"
+
+            # aliases
+            for a_tag in $a_tags; do
+              docker buildx imagetools create -t "$DOCKER_REPO:$a_tag" "$src_tag"
+            done
 
 workflows:
-  build:
+  build-multi-arch:
     when: << pipeline.parameters.run-build >>
     jobs:
-      - build-multi-arch
+      - build-linux-amd64:
+          name: linux-amd64-<< matrix.path >>
+          matrix:
+            parameters:
+              # list manually for now; long-term, we want to auto-generate this list from the main runner
+              path: &dockerfiles [
+                "dockerfiles/5/python3.8/bullseye",
+                "dockerfiles/5/python3.8/slim-bullseye",
+                "dockerfiles/5/python3.9/bullseye",
+                "dockerfiles/5/python3.9/slim-bullseye",
+                "dockerfiles/5/python3.10/bullseye",
+                "dockerfiles/5/python3.10/slim-bullseye"
+              ]
 
-  # build-and-test:
-  #   jobs:
-  #     - build-multi-arch:
-  #         filters: &always-run
-  #           tags:
-  #             only: /.*/
+      - build-linux-arm64:
+          name: linux-arm64-<< matrix.path >>
+          matrix:
+            parameters:
+              path: *dockerfiles
 
-  #     - test:
-  #         name: "test ocean:<< matrix.ocean-version >>-python<< matrix.python-version >>-<< matrix.platform >>"
-  #         requires:
-  #           - build
-  #         matrix:
-  #           parameters:
-  #             python-version: ["3.8", "3.9", "3.10"]
-  #             ocean-version: ["5.3.0", "5.3", "5"]
-  #             platform: ["bullseye", "slim-bullseye", "slim"]
-  #         filters:
-  #           <<: *always-run
+      - create-multi-arch:
+          name: create-multi-arch-<< matrix.path >>
+          requires:
+            - linux-amd64-<< matrix.path >>
+            - linux-arm64-<< matrix.path >>
+          matrix:
+            parameters:
+              path: *dockerfiles
+              architectures: ["amd64,arm64"]
+
+      - deploy:
+          name: deploy-<< matrix.path >>
+          requires:
+            - create-multi-arch-<< matrix.path >>
+          matrix:
+            parameters:
+              path: *dockerfiles
+          filters:
+            branches:
+              only: master
