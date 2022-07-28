@@ -5,6 +5,9 @@ parameters:
     type: boolean
     default: false
 
+environment: &global-environment
+  DOCKER_REPO: dwavesys/ocean
+
 jobs:
   build-multi-arch-qemu:
     working_directory: /ocean
@@ -59,6 +62,7 @@ jobs:
       - image: docker:20-git
 
     environment:
+      <<: *global-environment
       ARCH: amd64
 
     steps:
@@ -77,7 +81,7 @@ jobs:
             tagfile="<< parameters.path >>/tags.json"
 
             c_tag=$(jq -r .canonical_tag "$tagfile")
-            tag="ocean:$CIRCLE_SHA1-$c_tag-$ARCH"
+            tag="$DOCKER_REPO:$CIRCLE_SHA1-$c_tag-$ARCH"
 
             docker build "<< parameters.path >>" -t "$tag"
 
@@ -86,7 +90,7 @@ jobs:
           command: |
             tagfile="<< parameters.path >>/tags.json"
             c_tag=$(jq -r .canonical_tag "$tagfile")
-            tag="ocean:$CIRCLE_SHA1-$c_tag-$ARCH"
+            tag="$DOCKER_REPO:$CIRCLE_SHA1-$c_tag-$ARCH"
 
             ocean_ver=$(jq -r .subtags.ocean "$tagfile")
             python_ver=$(jq -r .subtags.python "$tagfile")
@@ -105,6 +109,21 @@ jobs:
             # limited scope for now (verify it's debian base image)
             docker run -it --rm "$tag" grep -F bullseye /etc/os-release
 
+      - run: &login-dockerhub
+          name: Login to DockerHub
+          command: |
+            echo "$DOCKER_ACCESS_TOKEN" | docker login -u "$DOCKER_USERNAME" --password-stdin
+
+      - run: &push-image
+          name: Push image with aliases to DockerHub
+          command: |
+            tagfile="<< parameters.path >>/tags.json"
+
+            c_tag=$(jq -r .canonical_tag "$tagfile")
+            tag="$DOCKER_REPO:$CIRCLE_SHA1-$c_tag-$ARCH"
+
+            docker push "$tag"
+
   build-linux-arm64:
     parameters:
       path:
@@ -118,6 +137,7 @@ jobs:
     resource_class: arm.medium
 
     environment:
+      <<: *global-environment
       ARCH: arm64
 
     steps:
@@ -126,6 +146,10 @@ jobs:
       - run: *build-canonical-image
 
       - run: *verify-canonical-image
+
+      - run: *login-dockerhub
+
+      - run: *push-image
 
 workflows:
   build-multi-arch:
