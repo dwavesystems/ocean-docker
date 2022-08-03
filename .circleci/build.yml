@@ -203,7 +203,7 @@ workflows:
           matrix:
             parameters:
               # list manually for now; long-term, we want to auto-generate this list from the main runner
-              path: &dockerfiles [
+              path: &linux-dockerfiles [
                 "dockerfiles/5/python3.8/bullseye",
                 "dockerfiles/5/python3.8/slim-bullseye",
                 "dockerfiles/5/python3.9/bullseye",
@@ -216,17 +216,17 @@ workflows:
           name: linux-arm64-<< matrix.path >>
           matrix:
             parameters:
-              path: *dockerfiles
+              path: *linux-dockerfiles
 
       - build-windows-amd64:
           name: windows-amd64-<< matrix.path >>
           matrix:
             parameters:
               # list manually for now; long-term, we want to auto-generate this list from the main runner
-              path: [
+              path: &windows-dockerfiles [
                 "dockerfiles/5/python3.8/windowsservercore",
                 "dockerfiles/5/python3.9/windowsservercore",
-                "dockerfiles/5/python3.10/windowsservercore",
+                "dockerfiles/5/python3.10/windowsservercore"
               ]
 
       - create-multi-arch:
@@ -234,10 +234,9 @@ workflows:
           requires:
             - linux-amd64-<< matrix.path >>
             - linux-arm64-<< matrix.path >>
-            - windows-amd64-<< matrix.path >>
           matrix:
             parameters:
-              path: *dockerfiles
+              path: *linux-dockerfiles
               architectures: ["amd64,arm64"]
 
       - deploy:
@@ -246,7 +245,7 @@ workflows:
             - create-multi-arch-<< matrix.path >>
           matrix:
             parameters:
-              path: *dockerfiles
+              path: *linux-dockerfiles
           filters:
             branches:
               only: master

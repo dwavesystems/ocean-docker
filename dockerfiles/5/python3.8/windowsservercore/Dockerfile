@@ -4,9 +4,9 @@
 # PLEASE DO NOT EDIT IT DIRECTLY.
 #
 
-FROM python:{{python_version}}-{{distribution_tag}}
+FROM python:3.8-windowsservercore
 
 RUN pip install --no-cache-dir \
-        dwave-ocean-sdk=={{ocean_version}}
+        dwave-ocean-sdk==5.3.0
 
 CMD ["python"]
