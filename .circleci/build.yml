@@ -1,5 +1,8 @@
 version: 2.1
 
+orbs:
+  win: circleci/windows@5.0
+
 parameters:
   run-build:
     type: boolean
@@ -104,6 +107,28 @@ jobs:
       - run: *login-dockerhub
       - run: *push-canonical-image
 
+  build-windows-amd64:
+    parameters:
+      path:
+        type: string
+        description: >
+          Build context path.
+
+    executor:
+      name: win/server-2022
+      shell: bash -eo pipefail
+
+    environment:
+      <<: *global-environment
+      ARCH: windows-amd64
+
+    steps:
+      - checkout
+      - run: *build-canonical-image
+      - run: *verify-canonical-image
+      - run: *login-dockerhub
+      - run: *push-canonical-image
+
   create-multi-arch:
     parameters:
       path:
@@ -198,11 +223,23 @@ workflows:
             parameters:
               path: *dockerfiles
 
+      - build-windows-amd64:
+          name: windows-amd64-<< matrix.path >>
+          matrix:
+            parameters:
+              # list manually for now; long-term, we want to auto-generate this list from the main runner
+              path: [
+                "dockerfiles/5/python3.8/windowsservercore",
+                "dockerfiles/5/python3.9/windowsservercore",
+                "dockerfiles/5/python3.10/windowsservercore",
+              ]
+
       - create-multi-arch:
           name: create-multi-arch-<< matrix.path >>
           requires:
             - linux-amd64-<< matrix.path >>
             - linux-arm64-<< matrix.path >>
+            - windows-amd64-<< matrix.path >>
           matrix:
             parameters:
               path: *dockerfiles
