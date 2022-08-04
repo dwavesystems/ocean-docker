@@ -56,14 +56,14 @@ jobs:
             ocean_ver=$(jq -r .subtags.ocean "$tagfile")
             python_ver=$(jq -r .subtags.python "$tagfile")
 
-            echo Ocean smoke test
-            docker run -it --rm "$tag" dwave --platform
+            echo 'Ocean smoke test'
+            docker run --rm "$tag" dwave --platform
 
-            echo Verify Ocean version (console invariant way)
-            docker run -it --rm "$tag" python -c "import dwaveoceansdk; exit(dwaveoceansdk.__version__ != '$ocean_ver')"
+            echo 'Verify Ocean version (console invariant way)'
+            docker run --rm "$tag" python -c "import dwaveoceansdk; exit(dwaveoceansdk.__version__ != '$ocean_ver')"
 
-            echo Verify Python version (console invariant way)
-            docker run -it --rm "$tag" python -c "import sys; exit('.'.join(map(str, sys.version_info[:2])) != '$python_ver')"
+            echo 'Verify Python version (console invariant way)'
+            docker run --rm "$tag" python -c "import sys; exit('.'.join(map(str, sys.version_info[:2])) != '$python_ver')"
 
       - run: &login-dockerhub
           name: Login to DockerHub
