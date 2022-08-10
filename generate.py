@@ -112,6 +112,18 @@ class BuildConfig:
         return namedtuple('Tags', 'bags canonical upstream')(
             tag_bags, sub_tags, upstream)
 
+    def get_template_path(self, **subtags):
+        """Filter `config.template` and return the first that matches `subtags`."""
+
+        def subtags_match(requirements: dict, item: dict):
+            return set(requirements.items()).issubset(item.items())
+
+        templates = self.config['template']
+        for path, filters in templates.items():
+            for requirements in filters:
+                if subtags_match(requirements, subtags):
+                    return path
+
     def __init__(self, config_file, **context):
         with open(config_file) as fp:
             config = json.load(fp)
@@ -215,11 +227,6 @@ def dockerfiles(ocean_version_scale):
     for ocean_dir in ocean_dirs:
         shutil.rmtree(os.path.join(base, ocean_dir), ignore_errors=True)
 
-    # load template
-    template_path = 'Dockerfile-linux.template'
-    with open(template_path) as fp:
-        template = fp.read()
-
     # generate `Dockerfile` and `tags.json` for each canonical tag
     for c_tag, c_sub in canonical_tags.items():
         click.echo(f"Processing {c_tag!r} = {c_sub!r}")
@@ -232,6 +239,12 @@ def dockerfiles(ocean_version_scale):
         tagsfile = os.path.join(dir, 'tags.json')
         os.makedirs(dir)
 
+        # load template
+        template_path = build.get_template_path(**c_sub)
+        with open(template_path) as fp:
+            template = fp.read()
+
+        # render dockerfile
         dockerfile = chevron.render(template, data=dict(
             python_version=c_sub['python'],
             ocean_version=c_sub['ocean'],

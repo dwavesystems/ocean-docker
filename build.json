@@ -17,5 +17,11 @@
         "ocean": "{ocean.patch}",
         "python": "3.9",
         "platform": "bullseye"
+    },
+    "template": {
+        "Dockerfile-linux.template": [
+            {"platform": "bullseye"},
+            {"platform": "slim-bullseye"}
+        ]
     }
 }
