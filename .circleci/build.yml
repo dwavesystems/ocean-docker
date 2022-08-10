@@ -115,7 +115,7 @@ jobs:
 
     environment:
       <<: *global-environment
-      ARCH: windows-amd64
+      ARCH: amd64
 
     steps:
       - checkout
@@ -238,6 +238,15 @@ workflows:
             parameters:
               path: *linux-dockerfiles
               architectures: ["amd64,arm64"]
+
+      - create-multi-arch:
+          name: create-multi-arch-<< matrix.path >>
+          requires:
+            - windows-amd64-<< matrix.path >>
+          matrix:
+            parameters:
+              path: *windows-dockerfiles
+              architectures: ["amd64"]
 
       - deploy:
           name: deploy-<< matrix.path >>
