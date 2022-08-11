@@ -35,9 +35,11 @@ def get_latest_ocean_version():
     tags = [release['tag_name'] for release in releases]
     return max(tags, key=lambda tag: tag.split('.'))
 
-
 def version_rounded(version, scale, sep='.'):
     return sep.join((version.split(sep))[:scale+1])
+
+def subtags_subset_of(subtags: dict, item: dict):
+    return set(subtags.items()).issubset(item.items())
 
 
 class BuildConfig:
@@ -103,8 +105,16 @@ class BuildConfig:
         sub_tags = dict()   # Dict[str, Dict[str, str]]
         upstream = dict()   # Dict[str, str]
 
+        def is_excluded(tag, rules):
+            for rule in rules:
+                if subtags_subset_of(rule, tag.canonical_subtags):
+                    return True
+            return False
+
         for oc, py, pl in product(ocean_versions, python_versions, platform_tags):
             info = self.tag_info(ocean=oc, python=py, platform=pl)
+            if is_excluded(info, self.config['exclude']):
+                continue
             tag_bags[info.canonical_tag].add(info.tag)
             sub_tags[info.canonical_tag] = info.canonical_subtags
             upstream[info.tag] = info.canonical_tag
@@ -115,13 +125,10 @@ class BuildConfig:
     def get_template_path(self, **subtags):
         """Filter `config.template` and return the first that matches `subtags`."""
 
-        def subtags_match(requirements: dict, item: dict):
-            return set(requirements.items()).issubset(item.items())
-
         templates = self.config['template']
         for path, filters in templates.items():
             for requirements in filters:
-                if subtags_match(requirements, subtags):
+                if subtags_subset_of(requirements, subtags):
                     return path
 
     def __init__(self, config_file, **context):
