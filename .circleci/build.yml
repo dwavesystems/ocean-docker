@@ -133,7 +133,7 @@ jobs:
       architectures:
         type: string
         description: >
-          Comma-separated (no space) list of architectures (codes) to build.
+          Whitespace-separated list of architectures (codes) to build.
 
     docker:
       # all we need is bash and docker
@@ -154,10 +154,14 @@ jobs:
             c_tag=$(jq -r .canonical_tag "$tagfile")
             tag="$DOCKER_REPO:$CIRCLE_SHA1-$c_tag"
 
-            docker manifest create \
-              "$tag" \
-              "$tag-"{<< parameters.architectures >>}
+            # expand manually (instead using brace expansion) to support one item-lists
+            tags=$(
+              for arch in << parameters.architectures >>; do
+                echo "$tag-$arch"
+              done
+            )
 
+            docker manifest create "$tag" $tags
             docker manifest push "$tag"
 
   deploy:
@@ -236,7 +240,7 @@ workflows:
           matrix:
             parameters:
               path: *linux-dockerfiles
-              architectures: ["amd64,arm64"]
+              architectures: ["amd64 arm64"]
 
       - create-multi-arch:
           name: create-multi-arch-<< matrix.path >>
