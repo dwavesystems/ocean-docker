@@ -224,7 +224,6 @@ workflows:
             parameters:
               # list manually for now; long-term, we want to auto-generate this list from the main runner
               path: &windows-dockerfiles [
-                "dockerfiles/5/python3.8/windowsservercore",
                 "dockerfiles/5/python3.9/windowsservercore",
                 "dockerfiles/5/python3.10/windowsservercore"
               ]
