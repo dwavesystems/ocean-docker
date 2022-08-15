@@ -32,10 +32,12 @@
     "shared": {
         "matrix": {
             "ocean": [null, "{ocean.major}", "{ocean.minor}", "{ocean.patch}"],
-            "python": [null, "3.9", "3.10"]
+            "python": [null, "3.9", "3.10"],
+            "platform": [null]
         },
-        "contract": {
-            "platform": ["bullseye", "windowsservercore"]
-        }
+        "contracted": [
+            {"platform": "bullseye"},
+            {"platform": "windowsservercore"}
+        ]
     }
 }

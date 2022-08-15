@@ -76,8 +76,9 @@ class BuildConfig:
             tag = cls.DEFAULT_TAG
         return tag
 
-    def tag_info(self, **subtags):
-        """Build a tag and canonical tag info from sub-tags.
+    def tag_info(self, *, defaults, **subtags):
+        """Build a tag and canonical tag info from sub-tags. Substitute null
+        subtag values according to defaults map (category -> value).
         Return (tag, canonical tag, canonical subtags).
         """
         # `subtags` key order matters! use: (ocean, python, platform)
@@ -87,7 +88,7 @@ class BuildConfig:
         def _expand(name, value):
             # expand defaults and aliases
             if value is None:
-                value = self.config['defaults'][name]
+                value = defaults[name]
             return self.config['aliases'].get(name, {}).get(value, value)
 
         canonical_subtags = {k: _expand(k,v) for k, v in subtags.items()}
@@ -96,11 +97,14 @@ class BuildConfig:
         return namedtuple('TagInfo', 'tag canonical_tag canonical_subtags')(
             tag, canonical_tag, canonical_subtags)
 
-    def get_tags(self, ocean_versions, python_versions, platform_tags):
+    def get_tags(self, ocean_versions, python_versions, platform_tags, defaults=None):
         """Produce: (1) a map of canonical tags (that we need to build) to a bag of
         alias tags; (2) canonical sub-tags for each canonical tag; and (3) a map of
         upstream canonical tags for each tag.
         """
+        if defaults is None:
+            defaults = self.config['defaults']
+
         tag_bags = defaultdict(set)   # Dict[str, Set[str]]
         sub_tags = dict()   # Dict[str, Dict[str, str]]
         upstream = dict()   # Dict[str, str]
@@ -112,7 +116,7 @@ class BuildConfig:
             return False
 
         for oc, py, pl in product(ocean_versions, python_versions, platform_tags):
-            info = self.tag_info(ocean=oc, python=py, platform=pl)
+            info = self.tag_info(ocean=oc, python=py, platform=pl, defaults=defaults)
             if is_excluded(info, self.config['exclude']):
                 continue
             tag_bags[info.canonical_tag].add(info.tag)
@@ -121,6 +125,28 @@ class BuildConfig:
 
         return namedtuple('Tags', 'bags canonical upstream')(
             tag_bags, sub_tags, upstream)
+
+    def get_shared_tags(self, config):
+        """Produce a map of shared tag to a set of canonical tags.
+        """
+        shared_tags = defaultdict(set)      # Dict[str, Set[str]]
+
+        for contracted in config['shared']['contracted']:
+            defaults = config['defaults'].copy()
+            defaults.update(contracted)
+            tags = self.get_tags(
+                ocean_versions=config['shared']['matrix']['ocean'],
+                python_versions=config['shared']['matrix']['python'],
+                platform_tags=config['shared']['matrix']['platform'],
+                defaults=defaults)
+
+            # non-canonical shared
+            for canonical in tags.canonical:
+                tags.upstream.pop(canonical, None)
+            for shared_tag, canonical_tag in tags.upstream.items():
+                shared_tags[shared_tag].add(canonical_tag)
+
+        return shared_tags
 
     def get_template_path(self, **subtags):
         """Filter `config.template` and return the first that matches `subtags`."""
@@ -139,6 +165,8 @@ class BuildConfig:
 
         self.tags = self.get_tags(
             self.ocean_versions, self.python_versions, self.platform_tags)
+
+        self.shared_tags = self.get_shared_tags(self.config)
 
     @property
     def ocean_versions(self):
@@ -199,9 +227,14 @@ def tags():
     for canonical, aliases in tag_bags.items():
         print(f'{canonical}:\n  {", ".join(sorted(aliases.difference([canonical])))}\n')
 
-    print(f"===\nall tags: {len(all_tags)}\n===")
+    print(f"===\nsingle-platform tags: {len(all_tags)}\n===")
     for tag in sorted(all_tags):
         print(tag)
+
+    shared_tags = build.shared_tags
+    print(f"\n===\nshared tags: {len(shared_tags)}\n===")
+    for tag, canonical in shared_tags.items():
+        print(f'{tag}:\n  {", ".join(sorted(canonical))}\n')
 
 
 @cli.command()
