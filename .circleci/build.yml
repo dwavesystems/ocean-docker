@@ -154,7 +154,7 @@ jobs:
             c_tag=$(jq -r .canonical_tag "$tagfile")
             tag="$DOCKER_REPO:$CIRCLE_SHA1-$c_tag"
 
-            # expand manually (instead using brace expansion) to support one item-lists
+            # expand manually (instead of using brace expansion) to support one-item lists
             tags=$(
               for arch in << parameters.architectures >>; do
                 echo "$tag-$arch"
@@ -164,7 +164,46 @@ jobs:
             docker manifest create "$tag" $tags
             docker manifest push "$tag"
 
-  deploy:
+  create-shared-tags:
+    parameters:
+      path:
+        type: string
+        description: >
+          Ocean dockerfiles base directory.
+
+    docker:
+      # all we need is bash and docker
+      - image: cimg/base:stable
+
+    environment:
+      <<: *global-environment
+
+    steps:
+      - checkout
+
+      - run: *login-dockerhub
+
+      - run:
+          name: Create manifest lists for shared tags
+          command: |
+            tagsfile="<< parameters.path >>/shared-tags.json"
+            declare -A tags="($(jq -r '. | to_entries[] | @sh "[\(.key)]=\(.value | join(" "))"' <"$tagsfile"))"
+
+            for tag in "${!tags[@]}"; do
+              s_tag="$DOCKER_REPO:$CIRCLE_SHA1-$tag"
+
+              # expand manually (instead of using brace expansion) to support one-item lists
+              c_tags=$(
+                for c_tag in ${tags[$tag]}; do
+                  echo "$DOCKER_REPO:$CIRCLE_SHA1-$c_tag"
+                done
+              )
+
+              docker manifest create "$s_tag" $c_tags
+              docker manifest push "$s_tag"
+            done
+
+  deploy-single-tags:
     parameters:
       path:
         type: string
@@ -233,31 +272,53 @@ workflows:
               ]
 
       - create-multi-arch:
-          name: create-multi-arch-<< matrix.path >>
+          name: create-linux-multi-arch-<< matrix.path >>
           requires:
             - linux-amd64-<< matrix.path >>
             - linux-arm64-<< matrix.path >>
           matrix:
+            alias: create-linux-multi-arch
             parameters:
               path: *linux-dockerfiles
               architectures: ["amd64 arm64"]
 
       - create-multi-arch:
-          name: create-multi-arch-<< matrix.path >>
+          name: create-windows-multi-arch-<< matrix.path >>
           requires:
             - windows-amd64-<< matrix.path >>
           matrix:
+            alias: create-windows-multi-arch
             parameters:
               path: *windows-dockerfiles
               architectures: ["amd64"]
 
-      - deploy:
-          name: deploy-<< matrix.path >>
+      - create-shared-tags:
+          name: create-shared-tags
           requires:
-            - create-multi-arch-<< matrix.path >>
+            - create-linux-multi-arch
+            - create-windows-multi-arch
+          matrix:
+            parameters:
+              path: &shared-tags ["dockerfiles/5"]
+
+      - deploy-single-tags:
+          name: deploy-linux-<< matrix.path >>
+          requires:
+            - create-linux-multi-arch-<< matrix.path >>
           matrix:
             parameters:
               path: *linux-dockerfiles
+          filters:
+            branches:
+              only: master
+
+      - deploy-single-tags:
+          name: deploy-windows-<< matrix.path >>
+          requires:
+            - create-windows-multi-arch-<< matrix.path >>
+          matrix:
+            parameters:
+              path: *windows-dockerfiles
           filters:
             branches:
               only: master
