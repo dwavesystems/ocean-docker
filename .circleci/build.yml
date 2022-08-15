@@ -192,14 +192,17 @@ jobs:
             for tag in "${!tags[@]}"; do
               s_tag="$DOCKER_REPO:$CIRCLE_SHA1-$tag"
 
-              # expand manually (instead of using brace expansion) to support one-item lists
-              c_tags=$(
-                for c_tag in ${tags[$tag]}; do
-                  echo "$DOCKER_REPO:$CIRCLE_SHA1-$c_tag"
-                done
-              )
+              # we know all canonical tags pushed so far are multi-arch (manifest lists),
+              # and we can't create manifest lists out of manifest lists, so iterate over lists
+              for c_tag in ${tags[$tag]}; do
+                m_tag="$DOCKER_REPO:$CIRCLE_SHA1-$c_tag"
+                digests=($(docker manifest inspect "$m_tag" | jq -r '.manifests[].digest'))
 
-              docker manifest create "$s_tag" $c_tags
+                for digest in "${digests[@]}"; do
+                  docker manifest create "$s_tag" --amend "${DOCKER_REPO}@${digest}"
+                done
+              done
+
               docker manifest push "$s_tag"
             done
 
