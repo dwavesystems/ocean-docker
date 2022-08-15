@@ -240,6 +240,36 @@ jobs:
               docker buildx imagetools create -t "$DOCKER_REPO:$a_tag" "$src_tag"
             done
 
+  deploy-shared-tags:
+    parameters:
+      path:
+        type: string
+        description: >
+          Ocean dockerfiles base directory.
+
+    docker:
+      - image: cimg/base:stable
+
+    environment:
+      <<: *global-environment
+
+    steps:
+      - checkout
+
+      - run: *login-dockerhub
+
+      - run:
+          name: Upload official shared tags (multi-platform images)
+          command: |
+            tagsfile="<< parameters.path >>/shared-tags.json"
+            declare -A tags="($(jq -r '. | to_entries[] | @sh "[\(.key)]=\(.value | join(" "))"' <"$tagsfile"))"
+
+            for tag in "${!tags[@]}"; do
+              docker buildx imagetools create -t \
+                "$DOCKER_REPO:$tag" \
+                "$DOCKER_REPO:$CIRCLE_SHA1-$tag"
+            done
+
 workflows:
   build-multi-arch:
     when: << pipeline.parameters.run-build >>
@@ -296,11 +326,12 @@ workflows:
               architectures: ["amd64"]
 
       - create-shared-tags:
-          name: create-shared-tags
+          name: create-shared-tags-<< matrix.path >>
           requires:
             - create-linux-multi-arch
             - create-windows-multi-arch
           matrix:
+            alias: create-shared-tags
             parameters:
               path: &shared-tags ["dockerfiles/5"]
 
@@ -322,6 +353,17 @@ workflows:
           matrix:
             parameters:
               path: *windows-dockerfiles
+          filters:
+            branches:
+              only: master
+
+      - deploy-shared-tags:
+          name: deploy-shared-tags
+          requires:
+            - create-shared-tags
+          matrix:
+            parameters:
+              path: *shared-tags
           filters:
             branches:
               only: master
