@@ -2,8 +2,11 @@
     "matrix": {
         "ocean": [null, "{ocean.major}", "{ocean.minor}", "{ocean.patch}"],
         "python": [null, "3.8", "3.9", "3.10"],
-        "platform": [null, "bullseye", "slim-bullseye", "slim"]
+        "platform": ["bullseye", "slim-bullseye", "slim", "windowsservercore"]
     },
+    "exclude": [
+        {"python": "3.8", "platform": "windowsservercore"}
+    ],
     "aliases": {
         "ocean": {
             "{ocean.major}": "{ocean.patch}",
@@ -15,7 +18,26 @@
     },
     "defaults": {
         "ocean": "{ocean.patch}",
-        "python": "3.9",
-        "platform": "bullseye"
+        "python": "3.9"
+    },
+    "template": {
+        "Dockerfile-linux.template": [
+            {"platform": "bullseye"},
+            {"platform": "slim-bullseye"}
+        ],
+        "Dockerfile-windows.template": [
+            {"platform": "windowsservercore"}
+        ]
+    },
+    "shared": {
+        "matrix": {
+            "ocean": [null, "{ocean.major}", "{ocean.minor}", "{ocean.patch}"],
+            "python": [null, "3.9", "3.10"],
+            "platform": [null]
+        },
+        "contracted": [
+            {"platform": "bullseye"},
+            {"platform": "windowsservercore"}
+        ]
     }
 }

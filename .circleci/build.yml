@@ -1,5 +1,8 @@
 version: 2.1
 
+orbs:
+  win: circleci/windows@5.0
+
 parameters:
   run-build:
     type: boolean
@@ -52,20 +55,15 @@ jobs:
 
             ocean_ver=$(jq -r .subtags.ocean "$tagfile")
             python_ver=$(jq -r .subtags.python "$tagfile")
-            platform=$(jq -r .subtags.platform "$tagfile")
 
-            echo Ocean smoke test
-            docker run -it --rm "$tag" dwave --platform
+            echo 'Ocean smoke test'
+            docker run --rm "$tag" dwave --platform
 
-            echo Verify Ocean version
-            docker run -it --rm "$tag" pip show dwave-ocean-sdk | grep -F "Version: $ocean_ver"
+            echo 'Verify Ocean version (console invariant way)'
+            docker run --rm "$tag" python -c "import dwaveoceansdk; exit(dwaveoceansdk.__version__ != '$ocean_ver')"
 
-            echo Verify Python version
-            docker run -it --rm "$tag" python -V | grep -F "Python $python_ver."
-
-            echo Verify platform
-            # limited scope for now (verify it's debian base image)
-            docker run -it --rm "$tag" grep -F bullseye /etc/os-release
+            echo 'Verify Python version (console invariant way)'
+            docker run --rm "$tag" python -c "import sys; exit('.'.join(map(str, sys.version_info[:2])) != '$python_ver')"
 
       - run: &login-dockerhub
           name: Login to DockerHub
@@ -104,6 +102,28 @@ jobs:
       - run: *login-dockerhub
       - run: *push-canonical-image
 
+  build-windows-amd64:
+    parameters:
+      path:
+        type: string
+        description: >
+          Build context path.
+
+    executor:
+      name: win/server-2022
+      shell: bash -eo pipefail
+
+    environment:
+      <<: *global-environment
+      ARCH: amd64
+
+    steps:
+      - checkout
+      - run: *build-canonical-image
+      - run: *verify-canonical-image
+      - run: *login-dockerhub
+      - run: *push-canonical-image
+
   create-multi-arch:
     parameters:
       path:
@@ -113,7 +133,7 @@ jobs:
       architectures:
         type: string
         description: >
-          Comma-separated (no space) list of architectures (codes) to build.
+          Whitespace-separated list of architectures (codes) to build.
 
     docker:
       # all we need is bash and docker
@@ -134,13 +154,59 @@ jobs:
             c_tag=$(jq -r .canonical_tag "$tagfile")
             tag="$DOCKER_REPO:$CIRCLE_SHA1-$c_tag"
 
-            docker manifest create \
-              "$tag" \
-              "$tag-"{<< parameters.architectures >>}
+            # expand manually (instead of using brace expansion) to support one-item lists
+            tags=$(
+              for arch in << parameters.architectures >>; do
+                echo "$tag-$arch"
+              done
+            )
 
+            docker manifest create "$tag" $tags
             docker manifest push "$tag"
 
-  deploy:
+  create-shared-tags:
+    parameters:
+      path:
+        type: string
+        description: >
+          Ocean dockerfiles base directory.
+
+    docker:
+      # all we need is bash and docker
+      - image: cimg/base:stable
+
+    environment:
+      <<: *global-environment
+
+    steps:
+      - checkout
+
+      - run: *login-dockerhub
+
+      - run:
+          name: Create manifest lists for shared tags
+          command: |
+            tagsfile="<< parameters.path >>/shared-tags.json"
+            declare -A tags="($(jq -r '. | to_entries[] | @sh "[\(.key)]=\(.value | join(" "))"' <"$tagsfile"))"
+
+            for tag in "${!tags[@]}"; do
+              s_tag="$DOCKER_REPO:$CIRCLE_SHA1-$tag"
+
+              # we know all canonical tags pushed so far are multi-arch (manifest lists),
+              # and we can't create manifest lists out of manifest lists, so iterate over lists
+              for c_tag in ${tags[$tag]}; do
+                m_tag="$DOCKER_REPO:$CIRCLE_SHA1-$c_tag"
+                digests=($(docker manifest inspect "$m_tag" | jq -r '.manifests[].digest'))
+
+                for digest in "${digests[@]}"; do
+                  docker manifest create "$s_tag" --amend "${DOCKER_REPO}@${digest}"
+                done
+              done
+
+              docker manifest push "$s_tag"
+            done
+
+  deploy-single-tags:
     parameters:
       path:
         type: string
@@ -174,6 +240,36 @@ jobs:
               docker buildx imagetools create -t "$DOCKER_REPO:$a_tag" "$src_tag"
             done
 
+  deploy-shared-tags:
+    parameters:
+      path:
+        type: string
+        description: >
+          Ocean dockerfiles base directory.
+
+    docker:
+      - image: cimg/base:stable
+
+    environment:
+      <<: *global-environment
+
+    steps:
+      - checkout
+
+      - run: *login-dockerhub
+
+      - run:
+          name: Upload official shared tags (multi-platform images)
+          command: |
+            tagsfile="<< parameters.path >>/shared-tags.json"
+            declare -A tags="($(jq -r '. | to_entries[] | @sh "[\(.key)]=\(.value | join(" "))"' <"$tagsfile"))"
+
+            for tag in "${!tags[@]}"; do
+              docker buildx imagetools create -t \
+                "$DOCKER_REPO:$tag" \
+                "$DOCKER_REPO:$CIRCLE_SHA1-$tag"
+            done
+
 workflows:
   build-multi-arch:
     when: << pipeline.parameters.run-build >>
@@ -183,7 +279,7 @@ workflows:
           matrix:
             parameters:
               # list manually for now; long-term, we want to auto-generate this list from the main runner
-              path: &dockerfiles [
+              path: &linux-dockerfiles [
                 "dockerfiles/5/python3.8/bullseye",
                 "dockerfiles/5/python3.8/slim-bullseye",
                 "dockerfiles/5/python3.9/bullseye",
@@ -196,25 +292,78 @@ workflows:
           name: linux-arm64-<< matrix.path >>
           matrix:
             parameters:
-              path: *dockerfiles
+              path: *linux-dockerfiles
+
+      - build-windows-amd64:
+          name: windows-amd64-<< matrix.path >>
+          matrix:
+            parameters:
+              # list manually for now; long-term, we want to auto-generate this list from the main runner
+              path: &windows-dockerfiles [
+                "dockerfiles/5/python3.9/windowsservercore",
+                "dockerfiles/5/python3.10/windowsservercore"
+              ]
 
       - create-multi-arch:
-          name: create-multi-arch-<< matrix.path >>
+          name: create-linux-multi-arch-<< matrix.path >>
           requires:
             - linux-amd64-<< matrix.path >>
             - linux-arm64-<< matrix.path >>
           matrix:
+            alias: create-linux-multi-arch
             parameters:
-              path: *dockerfiles
-              architectures: ["amd64,arm64"]
+              path: *linux-dockerfiles
+              architectures: ["amd64 arm64"]
 
-      - deploy:
-          name: deploy-<< matrix.path >>
+      - create-multi-arch:
+          name: create-windows-multi-arch-<< matrix.path >>
           requires:
-            - create-multi-arch-<< matrix.path >>
+            - windows-amd64-<< matrix.path >>
+          matrix:
+            alias: create-windows-multi-arch
+            parameters:
+              path: *windows-dockerfiles
+              architectures: ["amd64"]
+
+      - create-shared-tags:
+          name: create-shared-tags-<< matrix.path >>
+          requires:
+            - create-linux-multi-arch
+            - create-windows-multi-arch
+          matrix:
+            alias: create-shared-tags
+            parameters:
+              path: &shared-tags ["dockerfiles/5"]
+
+      - deploy-single-tags:
+          name: deploy-linux-<< matrix.path >>
+          requires:
+            - create-linux-multi-arch-<< matrix.path >>
           matrix:
             parameters:
-              path: *dockerfiles
+              path: *linux-dockerfiles
+          filters:
+            branches:
+              only: master
+
+      - deploy-single-tags:
+          name: deploy-windows-<< matrix.path >>
+          requires:
+            - create-windows-multi-arch-<< matrix.path >>
+          matrix:
+            parameters:
+              path: *windows-dockerfiles
+          filters:
+            branches:
+              only: master
+
+      - deploy-shared-tags:
+          name: deploy-shared-tags
+          requires:
+            - create-shared-tags
+          matrix:
+            parameters:
+              path: *shared-tags
           filters:
             branches:
               only: master

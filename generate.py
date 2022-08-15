@@ -35,9 +35,11 @@ def get_latest_ocean_version():
     tags = [release['tag_name'] for release in releases]
     return max(tags, key=lambda tag: tag.split('.'))
 
-
 def version_rounded(version, scale, sep='.'):
     return sep.join((version.split(sep))[:scale+1])
+
+def subtags_subset_of(subtags: dict, item: dict):
+    return set(subtags.items()).issubset(item.items())
 
 
 class BuildConfig:
@@ -74,8 +76,9 @@ class BuildConfig:
             tag = cls.DEFAULT_TAG
         return tag
 
-    def tag_info(self, **subtags):
-        """Build a tag and canonical tag info from sub-tags.
+    def tag_info(self, *, defaults, **subtags):
+        """Build a tag and canonical tag info from sub-tags. Substitute null
+        subtag values according to defaults map (category -> value).
         Return (tag, canonical tag, canonical subtags).
         """
         # `subtags` key order matters! use: (ocean, python, platform)
@@ -85,7 +88,7 @@ class BuildConfig:
         def _expand(name, value):
             # expand defaults and aliases
             if value is None:
-                value = self.config['defaults'][name]
+                value = defaults[name]
             return self.config['aliases'].get(name, {}).get(value, value)
 
         canonical_subtags = {k: _expand(k,v) for k, v in subtags.items()}
@@ -94,17 +97,28 @@ class BuildConfig:
         return namedtuple('TagInfo', 'tag canonical_tag canonical_subtags')(
             tag, canonical_tag, canonical_subtags)
 
-    def get_tags(self, ocean_versions, python_versions, platform_tags):
+    def get_tags(self, ocean_versions, python_versions, platform_tags, defaults=None):
         """Produce: (1) a map of canonical tags (that we need to build) to a bag of
         alias tags; (2) canonical sub-tags for each canonical tag; and (3) a map of
         upstream canonical tags for each tag.
         """
+        if defaults is None:
+            defaults = self.config['defaults']
+
         tag_bags = defaultdict(set)   # Dict[str, Set[str]]
         sub_tags = dict()   # Dict[str, Dict[str, str]]
         upstream = dict()   # Dict[str, str]
 
+        def is_excluded(tag, rules):
+            for rule in rules:
+                if subtags_subset_of(rule, tag.canonical_subtags):
+                    return True
+            return False
+
         for oc, py, pl in product(ocean_versions, python_versions, platform_tags):
-            info = self.tag_info(ocean=oc, python=py, platform=pl)
+            info = self.tag_info(ocean=oc, python=py, platform=pl, defaults=defaults)
+            if is_excluded(info, self.config['exclude']):
+                continue
             tag_bags[info.canonical_tag].add(info.tag)
             sub_tags[info.canonical_tag] = info.canonical_subtags
             upstream[info.tag] = info.canonical_tag
@@ -112,14 +126,49 @@ class BuildConfig:
         return namedtuple('Tags', 'bags canonical upstream')(
             tag_bags, sub_tags, upstream)
 
-    def __init__(self, config_file, **context):
+    def get_shared_tags(self, config):
+        """Produce a map of shared tag to a set of canonical tags.
+        """
+        shared_tags = defaultdict(set)      # Dict[str, Set[str]]
+
+        for contracted in config['shared']['contracted']:
+            defaults = config['defaults'].copy()
+            defaults.update(contracted)
+            tags = self.get_tags(
+                ocean_versions=config['shared']['matrix']['ocean'],
+                python_versions=config['shared']['matrix']['python'],
+                platform_tags=config['shared']['matrix']['platform'],
+                defaults=defaults)
+
+            # non-canonical shared
+            for canonical in tags.canonical:
+                tags.upstream.pop(canonical, None)
+            for shared_tag, canonical_tag in tags.upstream.items():
+                shared_tags[shared_tag].add(canonical_tag)
+
+        return shared_tags
+
+    def get_template_path(self, **subtags):
+        """Filter `config.template` and return the first that matches `subtags`."""
+
+        templates = self.config['template']
+        for path, filters in templates.items():
+            for requirements in filters:
+                if subtags_subset_of(requirements, subtags):
+                    return path
+
+    def __init__(self, config_file, ocean_version):
         with open(config_file) as fp:
             config = json.load(fp)
 
-        self.config = BuildConfig.expand_template(config, **context)
+        self.ocean_version = ocean_version
+        ctx = dict(ocean=self.ocean_version)
+        self.config = BuildConfig.expand_template(config, **ctx)
 
         self.tags = self.get_tags(
             self.ocean_versions, self.python_versions, self.platform_tags)
+
+        self.shared_tags = self.get_shared_tags(self.config)
 
     @property
     def ocean_versions(self):
@@ -139,7 +188,7 @@ OCEAN_VERSION = os.getenv('OCEAN_VERSION', get_latest_ocean_version())
 click.echo(f"Using Ocean version {OCEAN_VERSION}")
 
 # TODO: move under cli command(s), build file as option
-build = BuildConfig('build.json', ocean=OCEAN_VERSION)
+build = BuildConfig(config_file='build.json', ocean_version=OCEAN_VERSION)
 
 
 def get_tag_meta(build_info, tag):
@@ -164,7 +213,7 @@ def cli():
 
 @cli.command()
 def tags():
-    """Print tags to build for OCEAN_VERSION from environment."""
+    """Print tags to build for Ocean version under build."""
 
     tag_bags = build.tags.bags
     all_tags = set(tag_bags.keys()).union(*tag_bags.values())
@@ -180,9 +229,14 @@ def tags():
     for canonical, aliases in tag_bags.items():
         print(f'{canonical}:\n  {", ".join(sorted(aliases.difference([canonical])))}\n')
 
-    print(f"===\nall tags: {len(all_tags)}\n===")
+    print(f"===\nsingle-platform tags: {len(all_tags)}\n===")
     for tag in sorted(all_tags):
         print(tag)
+
+    shared_tags = build.shared_tags
+    print(f"\n===\nshared tags: {len(shared_tags)}\n===")
+    for tag, canonical in shared_tags.items():
+        print(f'{tag}:\n  {", ".join(sorted(canonical))}\n')
 
 
 @cli.command()
@@ -209,16 +263,11 @@ def dockerfiles(ocean_version_scale):
     canonical_tags = build.tags.canonical
 
     # purge old dockerfiles for ocean version under update
-    base = './dockerfiles'
+    base_dir = './dockerfiles'
     ocean_dirs = {version_rounded(c_sub['ocean'], ocean_version_scale)
                   for c_sub in canonical_tags.values()}
     for ocean_dir in ocean_dirs:
-        shutil.rmtree(os.path.join(base, ocean_dir), ignore_errors=True)
-
-    # load template
-    template_path = 'Dockerfile-linux.template'
-    with open(template_path) as fp:
-        template = fp.read()
+        shutil.rmtree(os.path.join(base_dir, ocean_dir), ignore_errors=True)
 
     # generate `Dockerfile` and `tags.json` for each canonical tag
     for c_tag, c_sub in canonical_tags.items():
@@ -227,11 +276,17 @@ def dockerfiles(ocean_version_scale):
         python_dir = f"python{c_sub['python']}"
         platform = c_sub['platform']
 
-        dir = os.path.join(base, ocean_dir, python_dir, platform)
+        dir = os.path.join(base_dir, ocean_dir, python_dir, platform)
         target = os.path.join(dir, 'Dockerfile')
         tagsfile = os.path.join(dir, 'tags.json')
         os.makedirs(dir)
 
+        # load template
+        template_path = build.get_template_path(**c_sub)
+        with open(template_path) as fp:
+            template = fp.read()
+
+        # render dockerfile
         dockerfile = chevron.render(template, data=dict(
             python_version=c_sub['python'],
             ocean_version=c_sub['ocean'],
@@ -245,6 +300,15 @@ def dockerfiles(ocean_version_scale):
         click.echo(f"- writing {tagsfile!r}")
         with open(tagsfile, "w") as fp:
             json.dump(get_tag_meta(build.tags, c_tag), fp, indent=2)
+
+    # generate shared-tags.json
+    ocean_dir = version_rounded(build.ocean_version, ocean_version_scale)
+    sharedtags_file = os.path.join(base_dir, ocean_dir, 'shared-tags.json')
+    sharedtags = {tag: sorted(canonical) for tag, canonical in build.shared_tags.items()}
+
+    click.echo(f"Writing {sharedtags_file!r}")
+    with open(sharedtags_file, "w") as fp:
+        json.dump(sharedtags, fp, indent=2)
 
 
 if __name__ == '__main__':
