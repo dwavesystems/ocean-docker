@@ -21,12 +21,15 @@ import os
 import re
 import json
 import shutil
-from itertools import product
+from itertools import product, groupby
 from collections import defaultdict, namedtuple
 
 import click
 import chevron
 import requests
+
+
+REPO_URL = 'https://github.com/dwavesystems/ocean-docker'
 
 
 def get_latest_ocean_version():
@@ -40,6 +43,10 @@ def version_rounded(version, scale, sep='.'):
 
 def subtags_subset_of(subtags: dict, item: dict):
     return set(subtags.items()).issubset(item.items())
+
+def get_repo_path_url(path, repo_url=REPO_URL):
+    # TODO: perhaps use permalink/tag/commit instead of latest master
+    return f"{repo_url}/blob/master/{path}"
 
 
 class BuildConfig:
@@ -255,6 +262,46 @@ def tags():
     print(f"\n===\nshared tags: {len(shared_tags)}\n===")
     for tag, canonical in shared_tags.items():
         print(f'{tag}:\n  {", ".join(sorted(canonical))}\n')
+
+
+@cli.command()
+@click.option('--template', default='README.md.template', type=click.File('r'),
+              help='README.md template file path. Set to "-" for stdin.')
+@click.option('--output', default='README.md', type=click.File('w'),
+              help='README.md file path. Set to "-" for stdout.')
+def readme(template, output):
+    """Create README.md from a template."""
+
+    simple = build.tags
+    shared = build.shared_tags
+
+    simple_tags = [{"tags": sorted(a_tags),
+                    "dockerfile": get_repo_path_url(build.get_dockerfile_path(c_tag)),
+                    "subtags": simple.canonical[c_tag]}
+                   for c_tag, a_tags in simple.bags.items()]
+
+    _key = lambda tag: ','.join(sorted(shared[tag]))
+    grouped = groupby(sorted(shared, key=_key), key=_key)
+    shared_tags = []
+    for _, g in grouped:
+        tags = sorted(g)
+        shared_tags.append({
+            "tags": tags,
+            "canonical": [{"tag": c_tag,
+                           "dockerfile": get_repo_path_url(build.get_dockerfile_path(c_tag))}
+                          for c_tag in sorted(shared[tags[0]])]
+        })
+
+    def f_strip(text, render):
+        return render(text).strip(' ,')
+
+    readme = chevron.render(template.read(), data=dict(
+        ocean_version=build.ocean_version,
+        simple_tags=simple_tags,
+        shared_tags=shared_tags,
+        strip=f_strip))
+
+    output.write(readme)
 
 
 @cli.command()
