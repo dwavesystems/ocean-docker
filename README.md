@@ -6,7 +6,7 @@ with quantum computers.
 
 ## Build Matrix
 
-- Ocean: [`latest`](https://github.com/dwavesystems/dwave-ocean-sdk/releases)
+- Ocean: [`5.3.0`](https://github.com/dwavesystems/dwave-ocean-sdk/releases/5.3.0)
 - Python: `3.8` (except on Windows), `3.9`, `3.10`
 - Platform: [`bullseye`](https://wiki.debian.org/DebianBullseye), `slim` (minimal bullseye), `windowsservercore`
 
@@ -17,45 +17,103 @@ as multi-arch docker images.
 
 Windows images are build for `amd64` only.
 
-## Canonical Tags (Single-platform) with Aliases
+## Supported tags, with `Dockerfile` links
 
-```
-5.3.0-python3.8-bullseye:
-  5-python3.8-bullseye, 5.3-python3.8-bullseye, python3.8-bullseye
+Simple tags represent "canonical images" and their aliases. Each simple tag maps
+to an image with specific ocean version, python version, and platform.
+Architecture can be shared, though; Linux simple tags point to multi-arch images.
 
-5.3.0-python3.8-slim-bullseye:
-  5-python3.8-slim, 5-python3.8-slim-bullseye, 5.3-python3.8-slim, 5.3-python3.8-slim-bullseye, 5.3.0-python3.8-slim, python3.8-slim, python3.8-slim-bullseye
+Shared tags map to multi-platform/multi-architecture images.
 
-5.3.0-python3.9-bullseye:
-  5-bullseye, 5-python3.9-bullseye, 5.3-bullseye, 5.3-python3.9-bullseye, 5.3.0-bullseye, bullseye, python3.9-bullseye
+### Simple Tags
 
-5.3.0-python3.9-slim-bullseye:
-  5-python3.9-slim, 5-python3.9-slim-bullseye, 5-slim, 5-slim-bullseye, 5.3-python3.9-slim, 5.3-python3.9-slim-bullseye, 5.3-slim, 5.3-slim-bullseye, 5.3.0-python3.9-slim, 5.3.0-slim, 5.3.0-slim-bullseye, python3.9-slim, python3.9-slim-bullseye, slim, slim-bullseye
+- [Ocean: `5.3.0`, Python: `3.9`, Platform: `bullseye`](https://github.com/dwavesystems/ocean-docker/blob/master/dockerfiles/5/python3.9/bullseye/Dockerfile)
+  - `5-bullseye`
+  - `5-python3.9-bullseye`
+  - `5.3-bullseye`
+  - `5.3-python3.9-bullseye`
+  - `5.3.0-bullseye`
+  - `5.3.0-python3.9-bullseye`
+  - `bullseye`
+  - `python3.9-bullseye`
 
-5.3.0-python3.9-windowsservercore:
-  5-python3.9-windowsservercore, 5-windowsservercore, 5.3-python3.9-windowsservercore, 5.3-windowsservercore, 5.3.0-windowsservercore, python3.9-windowsservercore, windowsservercore
+- [Ocean: `5.3.0`, Python: `3.9`, Platform: `slim-bullseye`](https://github.com/dwavesystems/ocean-docker/blob/master/dockerfiles/5/python3.9/slim-bullseye/Dockerfile)
+  - `5-python3.9-slim`
+  - `5-python3.9-slim-bullseye`
+  - `5-slim`
+  - `5-slim-bullseye`
+  - `5.3-python3.9-slim`
+  - `5.3-python3.9-slim-bullseye`
+  - `5.3-slim`
+  - `5.3-slim-bullseye`
+  - `5.3.0-python3.9-slim`
+  - `5.3.0-python3.9-slim-bullseye`
+  - `5.3.0-slim`
+  - `5.3.0-slim-bullseye`
+  - `python3.9-slim`
+  - `python3.9-slim-bullseye`
+  - `slim`
+  - `slim-bullseye`
 
-5.3.0-python3.10-bullseye:
-  5-python3.10-bullseye, 5.3-python3.10-bullseye, python3.10-bullseye
+- [Ocean: `5.3.0`, Python: `3.9`, Platform: `windowsservercore`](https://github.com/dwavesystems/ocean-docker/blob/master/dockerfiles/5/python3.9/windowsservercore/Dockerfile)
+  - `5-python3.9-windowsservercore`
+  - `5-windowsservercore`
+  - `5.3-python3.9-windowsservercore`
+  - `5.3-windowsservercore`
+  - `5.3.0-python3.9-windowsservercore`
+  - `5.3.0-windowsservercore`
+  - `python3.9-windowsservercore`
+  - `windowsservercore`
 
-5.3.0-python3.10-slim-bullseye:
-  5-python3.10-slim, 5-python3.10-slim-bullseye, 5.3-python3.10-slim, 5.3-python3.10-slim-bullseye, 5.3.0-python3.10-slim, python3.10-slim, python3.10-slim-bullseye
+- [Ocean: `5.3.0`, Python: `3.8`, Platform: `bullseye`](https://github.com/dwavesystems/ocean-docker/blob/master/dockerfiles/5/python3.8/bullseye/Dockerfile)
+  - `5-python3.8-bullseye`
+  - `5.3-python3.8-bullseye`
+  - `5.3.0-python3.8-bullseye`
+  - `python3.8-bullseye`
 
-5.3.0-python3.10-windowsservercore:
-  5-python3.10-windowsservercore, 5.3-python3.10-windowsservercore, python3.10-windowsservercore
-```
+- [Ocean: `5.3.0`, Python: `3.8`, Platform: `slim-bullseye`](https://github.com/dwavesystems/ocean-docker/blob/master/dockerfiles/5/python3.8/slim-bullseye/Dockerfile)
+  - `5-python3.8-slim`
+  - `5-python3.8-slim-bullseye`
+  - `5.3-python3.8-slim`
+  - `5.3-python3.8-slim-bullseye`
+  - `5.3.0-python3.8-slim`
+  - `5.3.0-python3.8-slim-bullseye`
+  - `python3.8-slim`
+  - `python3.8-slim-bullseye`
 
-## Shared Tags (Multi-platform)
+- [Ocean: `5.3.0`, Python: `3.10`, Platform: `bullseye`](https://github.com/dwavesystems/ocean-docker/blob/master/dockerfiles/5/python3.10/bullseye/Dockerfile)
+  - `5-python3.10-bullseye`
+  - `5.3-python3.10-bullseye`
+  - `5.3.0-python3.10-bullseye`
+  - `python3.10-bullseye`
 
-```
-latest, 5, 5.3, 5.3.0, python3.9, 5-python3.9, 5.3-python3.9, 5.3.0-python3.9:
-  5.3.0-python3.9-bullseye
-  5.3.0-python3.9-windowsservercore
+- [Ocean: `5.3.0`, Python: `3.10`, Platform: `slim-bullseye`](https://github.com/dwavesystems/ocean-docker/blob/master/dockerfiles/5/python3.10/slim-bullseye/Dockerfile)
+  - `5-python3.10-slim`
+  - `5-python3.10-slim-bullseye`
+  - `5.3-python3.10-slim`
+  - `5.3-python3.10-slim-bullseye`
+  - `5.3.0-python3.10-slim`
+  - `5.3.0-python3.10-slim-bullseye`
+  - `python3.10-slim`
+  - `python3.10-slim-bullseye`
 
-python3.10, 5-python3.10, 5.3-python3.10, 5.3.0-python3.10:
-  5.3.0-python3.10-bullseye
-  5.3.0-python3.10-windowsservercore
-```
+- [Ocean: `5.3.0`, Python: `3.10`, Platform: `windowsservercore`](https://github.com/dwavesystems/ocean-docker/blob/master/dockerfiles/5/python3.10/windowsservercore/Dockerfile)
+  - `5-python3.10-windowsservercore`
+  - `5.3-python3.10-windowsservercore`
+  - `5.3.0-python3.10-windowsservercore`
+  - `python3.10-windowsservercore`
+
+
+### Shared Tags
+
+- `5-python3.10`, `5.3-python3.10`, `5.3.0-python3.10`, `python3.10`
+  - [`5.3.0-python3.10-bullseye`](https://github.com/dwavesystems/ocean-docker/blob/master/dockerfiles/5/python3.10/bullseye/Dockerfile)
+  - [`5.3.0-python3.10-windowsservercore`](https://github.com/dwavesystems/ocean-docker/blob/master/dockerfiles/5/python3.10/windowsservercore/Dockerfile)
+
+- `5`, `5-python3.9`, `5.3`, `5.3-python3.9`, `5.3.0`, `5.3.0-python3.9`, `latest`, `python3.9`
+  - [`5.3.0-python3.9-bullseye`](https://github.com/dwavesystems/ocean-docker/blob/master/dockerfiles/5/python3.9/bullseye/Dockerfile)
+  - [`5.3.0-python3.9-windowsservercore`](https://github.com/dwavesystems/ocean-docker/blob/master/dockerfiles/5/python3.9/windowsservercore/Dockerfile)
+
 
 ## License
 
