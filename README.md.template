@@ -1,0 +1,58 @@
+# Ocean Docker Images
+
+[Ocean](https://docs.ocean.dwavesys.com/en/stable) is
+[D-Wave's](<https://www.dwavesys.com>) suite of tools for solving hard problems
+with quantum computers.
+
+## Build Matrix
+
+- Ocean: [`{{ ocean_version }}`](https://github.com/dwavesystems/dwave-ocean-sdk/releases/{{ ocean_version }})
+- Python: `3.8` (except on Windows), `3.9`, `3.10`
+- Platform: [`bullseye`](https://wiki.debian.org/DebianBullseye), `slim` (minimal bullseye), `windowsservercore`
+
+## Architectures
+
+All Linux images are built for `amd64` and `arm64` architectures, and are available
+as multi-arch docker images.
+
+Windows images are build for `amd64` only.
+
+## Supported tags, with `Dockerfile` links
+
+Simple tags represent "canonical images" and their aliases. Each simple tag maps
+to an image with specific ocean version, python version, and platform.
+Architecture can be shared, though; Linux simple tags point to multi-arch images.
+
+Shared tags map to multi-platform/multi-architecture images.
+
+### Simple Tags
+
+{{#simple_tags}}
+- [Ocean: `{{subtags.ocean}}`, Python: `{{subtags.python}}`, Platform: `{{subtags.platform}}`]({{dockerfile}})
+  {{#tags}}
+  - `{{.}}`
+  {{/tags}}
+
+{{/simple_tags}}
+
+### Shared Tags
+
+{{#shared_tags}}
+- {{#strip}}{{#tags}}`{{.}}`, {{/tags}}{{/strip}}
+  {{#canonical}}
+  - [`{{tag}}`]({{dockerfile}})
+  {{/canonical}}
+
+{{/shared_tags}}
+
+## License
+
+Ocean is released under the Apache License 2.0.
+
+Ocean dockerfiles (in this repo) are released under the Apache License 2.0 as well.
+See [LICENSE](./LICENSE) file.
+
+However, bear in mind that docker images in general contain other software which
+may be under other licenses. It is the image user's responsibility to ensure
+that any use of this image complies with any relevant licenses for all software
+contained within.
