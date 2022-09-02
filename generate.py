@@ -44,6 +44,8 @@ def subtags_subset_of(subtags: dict, item: dict):
 
 class BuildConfig:
     DEFAULT_TAG = 'latest'
+    DOCKERFILES_PATH = 'dockerfiles'
+    DEFAULT_VERSION_SCALE = 0
 
     @staticmethod
     def expand_template(obj, **context):
@@ -157,6 +159,22 @@ class BuildConfig:
                 if subtags_subset_of(requirements, subtags):
                     return path
 
+    def get_dockerfile_path(self, tag, ocean_version_scale=None):
+        """Return Dockerfile repo path, for a tag (canonical or alias)."""
+
+        c_tag = self.tags.upstream[tag]
+        c_sub = self.tags.canonical[c_tag]
+
+        if ocean_version_scale is None:
+            ocean_version_scale = self.DEFAULT_VERSION_SCALE
+
+        ocean_dir = version_rounded(c_sub['ocean'], ocean_version_scale)
+        python_dir = f"python{c_sub['python']}"
+        platform = c_sub['platform']
+
+        return os.path.join(
+            self.DOCKERFILES_PATH, ocean_dir, python_dir, platform, 'Dockerfile')
+
     def __init__(self, config_file, ocean_version):
         with open(config_file) as fp:
             config = json.load(fp)
@@ -263,7 +281,7 @@ def dockerfiles(ocean_version_scale):
     canonical_tags = build.tags.canonical
 
     # purge old dockerfiles for ocean version under update
-    base_dir = './dockerfiles'
+    base_dir = build.DOCKERFILES_PATH
     ocean_dirs = {version_rounded(c_sub['ocean'], ocean_version_scale)
                   for c_sub in canonical_tags.values()}
     for ocean_dir in ocean_dirs:
@@ -272,13 +290,10 @@ def dockerfiles(ocean_version_scale):
     # generate `Dockerfile` and `tags.json` for each canonical tag
     for c_tag, c_sub in canonical_tags.items():
         click.echo(f"Processing {c_tag!r} = {c_sub!r}")
-        ocean_dir = version_rounded(c_sub['ocean'], ocean_version_scale)
-        python_dir = f"python{c_sub['python']}"
-        platform = c_sub['platform']
 
-        dir = os.path.join(base_dir, ocean_dir, python_dir, platform)
-        target = os.path.join(dir, 'Dockerfile')
-        tagsfile = os.path.join(dir, 'tags.json')
+        dockerfile_path = build.get_dockerfile_path(c_tag, ocean_version_scale=ocean_version_scale)
+        dir = os.path.dirname(dockerfile_path)
+        tagsfile_path = os.path.join(dir, 'tags.json')
         os.makedirs(dir)
 
         # load template
@@ -290,24 +305,24 @@ def dockerfiles(ocean_version_scale):
         dockerfile = chevron.render(template, data=dict(
             python_version=c_sub['python'],
             ocean_version=c_sub['ocean'],
-            distribution_tag=platform,
-            is_slim=('slim' in platform)))
+            distribution_tag=c_sub['platform'],
+            is_slim=('slim' in c_sub['platform'])))
 
-        click.echo(f"- writing {target!r}")
-        with open(target, "w") as fp:
+        click.echo(f"- writing {dockerfile_path!r}")
+        with open(dockerfile_path, "w") as fp:
             fp.write(dockerfile)
 
-        click.echo(f"- writing {tagsfile!r}")
-        with open(tagsfile, "w") as fp:
+        click.echo(f"- writing {tagsfile_path!r}")
+        with open(tagsfile_path, "w") as fp:
             json.dump(get_tag_meta(build.tags, c_tag), fp, indent=2)
 
     # generate shared-tags.json
     ocean_dir = version_rounded(build.ocean_version, ocean_version_scale)
-    sharedtags_file = os.path.join(base_dir, ocean_dir, 'shared-tags.json')
+    sharedtags_path = os.path.join(base_dir, ocean_dir, 'shared-tags.json')
     sharedtags = {tag: sorted(canonical) for tag, canonical in build.shared_tags.items()}
 
-    click.echo(f"Writing {sharedtags_file!r}")
-    with open(sharedtags_file, "w") as fp:
+    click.echo(f"Writing {sharedtags_path!r}")
+    with open(sharedtags_path, "w") as fp:
         json.dump(sharedtags, fp, indent=2)
 
 
