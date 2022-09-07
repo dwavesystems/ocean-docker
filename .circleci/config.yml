@@ -11,5 +11,6 @@ workflows:
       - path-filtering/filter:
           mapping: |
             dockerfiles/.* run-build true
+            README.md push-readme true
           base-revision: master
           config-path: .circleci/build.yml

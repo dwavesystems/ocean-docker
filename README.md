@@ -4,11 +4,13 @@
 [D-Wave's](<https://www.dwavesys.com>) suite of tools for solving hard problems
 with quantum computers.
 
+
 ## Build Matrix
 
 - Ocean: [`5.3.0`](https://github.com/dwavesystems/dwave-ocean-sdk/releases/5.3.0)
 - Python: `3.8` (except on Windows), `3.9`, `3.10`
 - Platform: [`bullseye`](https://wiki.debian.org/DebianBullseye), `slim` (minimal bullseye), `windowsservercore`
+
 
 ## Architectures
 
@@ -16,6 +18,7 @@ All Linux images are built for `amd64` and `arm64` architectures, and are availa
 as multi-arch docker images.
 
 Windows images are build for `amd64` only.
+
 
 ## Supported tags, with `Dockerfile` links
 
@@ -113,6 +116,7 @@ Shared tags map to multi-platform/multi-architecture images.
 - `5`, `5-python3.9`, `5.3`, `5.3-python3.9`, `5.3.0`, `5.3.0-python3.9`, `latest`, `python3.9`
   - [`5.3.0-python3.9-bullseye`](https://github.com/dwavesystems/ocean-docker/blob/master/dockerfiles/5/python3.9/bullseye/Dockerfile)
   - [`5.3.0-python3.9-windowsservercore`](https://github.com/dwavesystems/ocean-docker/blob/master/dockerfiles/5/python3.9/windowsservercore/Dockerfile)
+
 
 
 ## License
