@@ -406,4 +406,8 @@ workflows:
   push-readme:
     when: << pipeline.parameters.push-readme >>
     jobs:
-      - push-readme
+      - push-readme:
+          name: update-readme-on-dockerhub
+          filters:
+            branches:
+              only: master
