@@ -1,0 +1,40 @@
+version: 2.1
+
+parameters:
+  push-readme:
+    type: boolean
+    default: false
+
+environment: &global-environment
+  DOCKER_REPO: dwavesys/ocean
+
+jobs:
+  push-readme:
+    docker:
+      - image: docker:20-git
+
+    environment:
+      <<: *global-environment
+
+    steps:
+      - checkout
+
+      - setup_remote_docker:
+          docker_layer_caching: true
+
+      - run:
+          name: Push readme to dockerhub
+          command: |
+            docker run --rm -t -v $(pwd):/repo \
+            -e DOCKER_USER="$DOCKER_USERNAME" -e DOCKER_PASS="$DOCKER_ACCESS_TOKEN" \
+            -e PUSHRM_PROVIDER=dockerhub -e PUSHRM_DEBUG=1 \
+            -e PUSHRM_FILE=/repo/README.md \
+            -e PUSHRM_SHORT='D-Wave Ocean SDK Docker Images' \
+            -e PUSHRM_TARGET="docker.io/$DOCKER_REPO" \
+            chko/docker-pushrm:1
+
+workflows:
+  push-readme:
+    when: << pipeline.parameters.push-readme >>
+    jobs:
+      - push-readme
