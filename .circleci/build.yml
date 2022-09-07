@@ -280,8 +280,6 @@ jobs:
     environment:
       <<: *global-environment
 
-    working_directory: /repo
-
     steps:
       - checkout
 
@@ -289,12 +287,20 @@ jobs:
           docker_layer_caching: true
 
       - run:
+          name: Setup volume for readme file sharing with remote docker env
+          command: |
+            # create a dummy container which will hold a volume with config
+            docker create -v /readme --name data alpine /bin/true
+            # copy a config file into this volume
+            docker cp README.md data:/readme
+
+      - run:
           name: Push readme to dockerhub
           command: |
-            docker run --rm -t -v /repo:/repo \
+            docker run --rm -t --volumes-from data \
             -e DOCKER_USER="$DOCKER_USERNAME" -e DOCKER_PASS="$DOCKER_ACCESS_TOKEN" \
             -e PUSHRM_PROVIDER=dockerhub -e PUSHRM_DEBUG=1 \
-            -e PUSHRM_FILE=/repo/README.md \
+            -e PUSHRM_FILE=/readme/README.md \
             -e PUSHRM_SHORT='D-Wave Ocean SDK Docker Images' \
             -e PUSHRM_TARGET="docker.io/$DOCKER_REPO" \
             chko/docker-pushrm:1
