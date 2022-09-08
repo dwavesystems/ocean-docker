@@ -118,7 +118,6 @@ Shared tags map to multi-platform/multi-architecture images.
   - [`5.3.0-python3.9-windowsservercore`](https://github.com/dwavesystems/ocean-docker/blob/master/dockerfiles/5/python3.9/windowsservercore/Dockerfile)
 
 
-
 ## License
 
 Ocean is released under the Apache License 2.0.

@@ -2,6 +2,7 @@ version: 2.1
 
 orbs:
   win: circleci/windows@5.0
+  docker: circleci/docker@2.1
 
 parameters:
   run-build:
@@ -275,7 +276,7 @@ jobs:
 
   push-readme:
     docker:
-      - image: docker:20-git
+      - image: cimg/base:stable
 
     environment:
       <<: *global-environment
@@ -283,27 +284,10 @@ jobs:
     steps:
       - checkout
 
-      - setup_remote_docker:
-          docker_layer_caching: true
-
-      - run:
-          name: Setup volume for readme file sharing with remote docker env
-          command: |
-            # create a dummy container which will hold a volume with config
-            docker create -v /readme --name data alpine /bin/true
-            # copy a config file into this volume
-            docker cp README.md data:/readme
-
-      - run:
-          name: Push readme to dockerhub
-          command: |
-            docker run --rm -t --volumes-from data \
-            -e DOCKER_USER="$DOCKER_USERNAME" -e DOCKER_PASS="$DOCKER_ACCESS_TOKEN" \
-            -e PUSHRM_PROVIDER=dockerhub -e PUSHRM_DEBUG=1 \
-            -e PUSHRM_FILE=/readme/README.md \
-            -e PUSHRM_SHORT='D-Wave Ocean SDK Docker Images' \
-            -e PUSHRM_TARGET="docker.io/$DOCKER_REPO" \
-            chko/docker-pushrm:1
+      - docker/update-description:
+          docker-username: DOCKER_USERNAME
+          docker-password: DOCKER_ACCESS_TOKEN
+          image: $DOCKER_REPO
 
 workflows:
   build-multi-arch:
