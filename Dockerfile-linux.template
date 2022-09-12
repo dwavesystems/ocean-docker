@@ -4,20 +4,35 @@
 # PLEASE DO NOT EDIT IT DIRECTLY.
 #
 
+{{#is_slim}}
+# pre-build wheels for installation in slim image
+FROM python:{{python_version}}-bullseye as wheelhouse
+
+RUN mkdir /wheels \
+    && pip install -U pip setuptools wheel \
+    && pip wheel -w /wheels dwave-ocean-sdk
+
+{{/is_slim}}
 FROM python:{{python_version}}-{{distribution_tag}}
 
+{{^is_slim}}
 RUN apt-get update \
     && apt-get install -yq --no-install-recommends \
-        build-essential \{{^is_slim}}
+        build-essential \
         man-db \
         curl \
         htop \
         less \
         git \
-        vim \{{/is_slim}}
+        vim \
     && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/*
 
-RUN pip install --no-cache-dir \
+{{/is_slim}}
+{{#is_slim}}
+COPY --from=wheelhouse /wheels /tmp/wheels
+
+{{/is_slim}}
+RUN pip install --no-cache-dir {{#is_slim}}--no-index -f /tmp/wheels/ {{/is_slim}}\
         dwave-ocean-sdk=={{ocean_version}} \
     && rm -rf /tmp/*
 
