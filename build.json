@@ -21,9 +21,11 @@
         "python": "3.9"
     },
     "template": {
-        "Dockerfile-linux.template": [
-            {"platform": "bullseye"},
+        "Dockerfile-linux-slim.template": [
             {"platform": "slim-bullseye"}
+        ],
+        "Dockerfile-linux.template": [
+            {"platform": "bullseye"}
         ],
         "Dockerfile-windows.template": [
             {"platform": "windowsservercore"}
