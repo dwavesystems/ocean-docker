@@ -9,10 +9,12 @@ FROM python:3.9-slim-bullseye
 RUN apt-get update \
     && apt-get install -yq --no-install-recommends \
         build-essential \
-    && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/*
-
-RUN pip install --no-cache-dir \
+    && pip install --no-cache-dir \
         dwave-ocean-sdk==5.3.0 \
-    && rm -rf /tmp/*
+    && apt-get remove -yq build-essential \
+    && apt-get autoremove -yq \
+    && apt-get clean \
+    && pip cache purge \
+    && rm -rf /var/lib/apt/lists/* /tmp/*
 
 CMD ["python"]
