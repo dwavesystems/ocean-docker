@@ -13,7 +13,7 @@ parameters:
     default: false
 
 environment: &global-environment
-  DOCKER_REPO: dwavesys/ocean
+  DOCKER_REPO: dwaveoceanbot/ocean-staging
 
 jobs:
   build-linux-amd64:
@@ -364,6 +364,8 @@ workflows:
           filters:
             branches:
               only: master
+          context:
+            - ocean-docker-prod
 
       - deploy-single-tags:
           name: deploy-windows-<< matrix.path >>
@@ -375,6 +377,8 @@ workflows:
           filters:
             branches:
               only: master
+          context:
+            - ocean-docker-prod
 
       - deploy-shared-tags:
           name: deploy-shared-tags
@@ -386,6 +390,8 @@ workflows:
           filters:
             branches:
               only: master
+          context:
+            - ocean-docker-prod
 
   push-readme:
     when: << pipeline.parameters.push-readme >>
@@ -395,3 +401,5 @@ workflows:
           filters:
             branches:
               only: master
+          context:
+            - ocean-docker-prod
