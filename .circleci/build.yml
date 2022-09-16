@@ -25,12 +25,22 @@ jobs:
 
     environment:
       ARCH: amd64
+      BASH_ENV: /etc/profile
+
+    shell: /bin/sh -leo pipefail
 
     steps:
       - checkout
 
       - setup_remote_docker:
           docker_layer_caching: true
+
+      - run: &setup-tag-prefix
+          name: Setup tag prefix
+          command: |
+            if [[ $CIRCLE_BRANCH != master ]]; then
+              echo "export TAG_PREFIX=${CIRCLE_SHA1:0:7}-" >> "$BASH_ENV"
+            fi
 
       - run:
           name: Install jq
@@ -42,7 +52,7 @@ jobs:
             tagfile="<< parameters.path >>/tags.json"
 
             c_tag=$(jq -r .canonical_tag "$tagfile")
-            tag="$DOCKER_REPO:$CIRCLE_SHA1-$c_tag-$ARCH"
+            tag="$DOCKER_REPO:$TAG_PREFIX$c_tag-$ARCH"
 
             docker build "<< parameters.path >>" -t "$tag"
 
@@ -51,7 +61,7 @@ jobs:
           command: |
             tagfile="<< parameters.path >>/tags.json"
             c_tag=$(jq -r .canonical_tag "$tagfile")
-            tag="$DOCKER_REPO:$CIRCLE_SHA1-$c_tag-$ARCH"
+            tag="$DOCKER_REPO:$TAG_PREFIX$c_tag-$ARCH"
 
             ocean_ver=$(jq -r .subtags.ocean "$tagfile")
             python_ver=$(jq -r .subtags.python "$tagfile")
@@ -76,7 +86,7 @@ jobs:
             tagfile="<< parameters.path >>/tags.json"
             c_tag=$(jq -r .canonical_tag "$tagfile")
 
-            tag="$DOCKER_REPO:$CIRCLE_SHA1-$c_tag-$ARCH"
+            tag="$DOCKER_REPO:$TAG_PREFIX$c_tag-$ARCH"
             docker push "$tag"
 
   build-linux-arm64:
@@ -96,6 +106,7 @@ jobs:
 
     steps:
       - checkout
+      - run: *setup-tag-prefix
       - run: *build-canonical-image
       - run: *verify-canonical-image
       - run: *login-dockerhub
@@ -117,6 +128,7 @@ jobs:
 
     steps:
       - checkout
+      - run: *setup-tag-prefix
       - run: *build-canonical-image
       - run: *verify-canonical-image
       - run: *login-dockerhub
@@ -139,15 +151,15 @@ jobs:
 
     steps:
       - checkout
-
+      - run: *setup-tag-prefix
       - run: *login-dockerhub
-
       - run:
-          name: Upload manifest list to DockerHub
+          name: Create canonical multi-arch image manifests on DockerHub
           command: |
             tagfile="<< parameters.path >>/tags.json"
             c_tag=$(jq -r .canonical_tag "$tagfile")
-            tag="$DOCKER_REPO:$CIRCLE_SHA1-$c_tag"
+            a_tags=$(jq -r ".alias_tags[]" "$tagfile")
+            tag="$DOCKER_REPO:$TAG_PREFIX$c_tag"
 
             # expand manually (instead of using brace expansion) to support one-item lists
             tags=$(
@@ -156,8 +168,14 @@ jobs:
               done
             )
 
+            # canonical (multi-arch) image
             docker manifest create "$tag" $tags
             docker manifest push "$tag"
+
+            # aliases
+            for a_tag in $a_tags; do
+              docker buildx imagetools create -t "$DOCKER_REPO:$TAG_PREFIX$a_tag" "$tag"
+            done
 
   create-shared-tags:
     parameters:
@@ -172,9 +190,8 @@ jobs:
 
     steps:
       - checkout
-
+      - run: *setup-tag-prefix
       - run: *login-dockerhub
-
       - run:
           name: Create manifest lists for shared tags
           command: |
@@ -182,12 +199,14 @@ jobs:
             declare -A tags="($(jq -r '. | to_entries[] | @sh "[\(.key)]=\(.value | join(" "))"' <"$tagsfile"))"
 
             for tag in "${!tags[@]}"; do
-              s_tag="$DOCKER_REPO:$CIRCLE_SHA1-$tag"
+              # tag ~ "5.3.0"
+              s_tag="$DOCKER_REPO:$TAG_PREFIX$tag"
 
-              # we know all canonical tags pushed so far are multi-arch (manifest lists),
+              # we know all canonical images pushed so far are multi-arch manifest lists,
               # and we can't create manifest lists out of manifest lists, so iterate over lists
               for c_tag in ${tags[$tag]}; do
-                m_tag="$DOCKER_REPO:$CIRCLE_SHA1-$c_tag"
+                # c_tag ~ "5.3.0-python3.9-bullseye"
+                m_tag="$DOCKER_REPO:$TAG_PREFIX$c_tag"
                 digests=($(docker manifest inspect "$m_tag" | jq -r '.manifests[].digest'))
 
                 for digest in "${digests[@]}"; do
@@ -196,64 +215,6 @@ jobs:
               done
 
               docker manifest push "$s_tag"
-            done
-
-  deploy-single-tags:
-    parameters:
-      path:
-        type: string
-        description: >
-          Build context path.
-
-    docker:
-      - image: cimg/base:stable
-
-    steps:
-      - checkout
-
-      - run: *login-dockerhub
-
-      - run:
-          name: Upload official multi-arch images
-          command: |
-            tagfile="<< parameters.path >>/tags.json"
-            c_tag=$(jq -r .canonical_tag "$tagfile")
-            a_tags=$(jq -r ".alias_tags[]" "$tagfile")
-            src_tag="$DOCKER_REPO:$CIRCLE_SHA1-$c_tag"
-
-            # canonical
-            docker buildx imagetools create -t "$DOCKER_REPO:$c_tag" "$src_tag"
-
-            # aliases
-            for a_tag in $a_tags; do
-              docker buildx imagetools create -t "$DOCKER_REPO:$a_tag" "$src_tag"
-            done
-
-  deploy-shared-tags:
-    parameters:
-      path:
-        type: string
-        description: >
-          Ocean dockerfiles base directory.
-
-    docker:
-      - image: cimg/base:stable
-
-    steps:
-      - checkout
-
-      - run: *login-dockerhub
-
-      - run:
-          name: Upload official shared tags (multi-platform images)
-          command: |
-            tagsfile="<< parameters.path >>/shared-tags.json"
-            declare -A tags="($(jq -r '. | to_entries[] | @sh "[\(.key)]=\(.value | join(" "))"' <"$tagsfile"))"
-
-            for tag in "${!tags[@]}"; do
-              docker buildx imagetools create -t \
-                "$DOCKER_REPO:$tag" \
-                "$DOCKER_REPO:$CIRCLE_SHA1-$tag"
             done
 
   push-readme:
@@ -332,45 +293,6 @@ workflows:
             alias: create-shared-tags
             parameters:
               path: &shared-tags ["dockerfiles/5"]
-
-      - deploy-single-tags:
-          name: deploy-linux-<< matrix.path >>
-          requires:
-            - create-linux-multi-arch-<< matrix.path >>
-          matrix:
-            parameters:
-              path: *linux-dockerfiles
-          filters:
-            branches:
-              only: master
-          context:
-            - ocean-docker-prod
-
-      - deploy-single-tags:
-          name: deploy-windows-<< matrix.path >>
-          requires:
-            - create-windows-multi-arch-<< matrix.path >>
-          matrix:
-            parameters:
-              path: *windows-dockerfiles
-          filters:
-            branches:
-              only: master
-          context:
-            - ocean-docker-prod
-
-      - deploy-shared-tags:
-          name: deploy-shared-tags
-          requires:
-            - create-shared-tags
-          matrix:
-            parameters:
-              path: *shared-tags
-          filters:
-            branches:
-              only: master
-          context:
-            - ocean-docker-prod
 
   push-readme:
     when: << pipeline.parameters.push-readme >>
