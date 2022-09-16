@@ -12,9 +12,6 @@ parameters:
     type: boolean
     default: false
 
-environment: &global-environment
-  DOCKER_REPO: dwaveoceanbot/ocean-staging
-
 jobs:
   build-linux-amd64:
     parameters:
@@ -27,7 +24,6 @@ jobs:
       - image: docker:20-git
 
     environment:
-      <<: *global-environment
       ARCH: amd64
 
     steps:
@@ -96,7 +92,6 @@ jobs:
     resource_class: arm.medium
 
     environment:
-      <<: *global-environment
       ARCH: arm64
 
     steps:
@@ -118,7 +113,6 @@ jobs:
       shell: bash -eo pipefail
 
     environment:
-      <<: *global-environment
       ARCH: amd64
 
     steps:
@@ -142,9 +136,6 @@ jobs:
     docker:
       # all we need is bash and docker
       - image: cimg/base:stable
-
-    environment:
-      <<: *global-environment
 
     steps:
       - checkout
@@ -178,9 +169,6 @@ jobs:
     docker:
       # all we need is bash and docker
       - image: cimg/base:stable
-
-    environment:
-      <<: *global-environment
 
     steps:
       - checkout
@@ -220,9 +208,6 @@ jobs:
     docker:
       - image: cimg/base:stable
 
-    environment:
-      <<: *global-environment
-
     steps:
       - checkout
 
@@ -254,9 +239,6 @@ jobs:
     docker:
       - image: cimg/base:stable
 
-    environment:
-      <<: *global-environment
-
     steps:
       - checkout
 
@@ -277,9 +259,6 @@ jobs:
   push-readme:
     docker:
       - image: cimg/base:stable
-
-    environment:
-      <<: *global-environment
 
     steps:
       - checkout
