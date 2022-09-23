@@ -11,6 +11,9 @@ parameters:
   push-readme:
     type: boolean
     default: false
+  master-branch:
+    type: string
+    default: "master"
 
 jobs:
   build-linux-amd64:
@@ -38,7 +41,7 @@ jobs:
       - run: &setup-tag-prefix
           name: Setup tag prefix
           command: |
-            if [[ $CIRCLE_BRANCH != master ]]; then
+            if [[ $CIRCLE_BRANCH != << pipeline.parameters.master-branch >> ]]; then
               echo "export TAG_PREFIX=${CIRCLE_SHA1:0:7}-" >> "$BASH_ENV"
             fi
 
@@ -230,10 +233,10 @@ jobs:
           image: $DOCKER_REPO
 
 workflows:
-  build-multi-arch:
+  stage:
     when: << pipeline.parameters.run-build >>
     jobs:
-      - build-linux-amd64:
+      - build-linux-amd64: &build-linux-amd64
           name: linux-amd64-<< matrix.path >>
           matrix:
             parameters:
@@ -246,14 +249,20 @@ workflows:
                 "dockerfiles/5/python3.10/bullseye",
                 "dockerfiles/5/python3.10/slim-bullseye"
               ]
+          filters: &off-master
+            branches:
+              ignore: << pipeline.parameters.master-branch >>
+          context: &ctx-staging "ocean-docker-staging"
 
-      - build-linux-arm64:
+      - build-linux-arm64: &build-linux-arm64
           name: linux-arm64-<< matrix.path >>
           matrix:
             parameters:
               path: *linux-dockerfiles
+          filters: *off-master
+          context: *ctx-staging
 
-      - build-windows-amd64:
+      - build-windows-amd64: &build-windows-amd64
           name: windows-amd64-<< matrix.path >>
           matrix:
             parameters:
@@ -262,8 +271,10 @@ workflows:
                 "dockerfiles/5/python3.9/windowsservercore",
                 "dockerfiles/5/python3.10/windowsservercore"
               ]
+          filters: *off-master
+          context: *ctx-staging
 
-      - create-multi-arch:
+      - create-multi-arch: &create-linux-multi-arch
           name: create-linux-multi-arch-<< matrix.path >>
           requires:
             - linux-amd64-<< matrix.path >>
@@ -273,8 +284,10 @@ workflows:
             parameters:
               path: *linux-dockerfiles
               architectures: ["amd64 arm64"]
+          filters: *off-master
+          context: *ctx-staging
 
-      - create-multi-arch:
+      - create-multi-arch: &create-windows-multi-arch
           name: create-windows-multi-arch-<< matrix.path >>
           requires:
             - windows-amd64-<< matrix.path >>
@@ -283,8 +296,10 @@ workflows:
             parameters:
               path: *windows-dockerfiles
               architectures: ["amd64"]
+          filters: *off-master
+          context: *ctx-staging
 
-      - create-shared-tags:
+      - create-shared-tags: &create-shared-tags
           name: create-shared-tags-<< matrix.path >>
           requires:
             - create-linux-multi-arch
@@ -293,14 +308,48 @@ workflows:
             alias: create-shared-tags
             parameters:
               path: &shared-tags ["dockerfiles/5"]
+          filters: *off-master
+          context: *ctx-staging
+
+  deploy:
+    when: << pipeline.parameters.run-build >>
+    jobs:
+      - build-linux-amd64:
+          <<: *build-linux-amd64
+          filters: &on-master
+            branches:
+              only: << pipeline.parameters.master-branch >>
+          context: &ctx-prod "ocean-docker-prod"
+
+      - build-linux-arm64:
+          <<: *build-linux-arm64
+          filters: *on-master
+          context: *ctx-prod
+
+      - build-windows-amd64:
+          <<: *build-windows-amd64
+          filters: *on-master
+          context: *ctx-prod
+
+      - create-multi-arch:
+          <<: *create-linux-multi-arch
+          filters: *on-master
+          context: *ctx-prod
+
+      - create-multi-arch:
+          <<: *create-windows-multi-arch
+          filters: *on-master
+          context: *ctx-prod
+
+      - create-shared-tags:
+          <<: *create-shared-tags
+          filters: *on-master
+          context: *ctx-prod
 
   push-readme:
     when: << pipeline.parameters.push-readme >>
     jobs:
       - push-readme:
           name: update-readme-on-dockerhub
-          filters:
-            branches:
-              only: master
-          context:
-            - ocean-docker-prod
+          filters: *on-master
+          context: *ctx-prod
