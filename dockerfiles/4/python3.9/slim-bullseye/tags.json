@@ -1,0 +1,25 @@
+{
+  "canonical_tag": "4.5.0-python3.9-slim-bullseye",
+  "alias_tags": [
+    "4-python3.9-slim",
+    "4-python3.9-slim-bullseye",
+    "4-slim",
+    "4-slim-bullseye",
+    "4.5-python3.9-slim",
+    "4.5-python3.9-slim-bullseye",
+    "4.5-slim",
+    "4.5-slim-bullseye",
+    "4.5.0-python3.9-slim",
+    "4.5.0-slim",
+    "4.5.0-slim-bullseye",
+    "python3.9-slim",
+    "python3.9-slim-bullseye",
+    "slim",
+    "slim-bullseye"
+  ],
+  "subtags": {
+    "ocean": "4.5.0",
+    "python": "3.9",
+    "platform": "slim-bullseye"
+  }
+}

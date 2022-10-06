@@ -1,0 +1,50 @@
+{
+  "latest": [
+    "4.5.0-python3.9-bullseye",
+    "4.5.0-python3.9-windowsservercore"
+  ],
+  "python3.9": [
+    "4.5.0-python3.9-bullseye",
+    "4.5.0-python3.9-windowsservercore"
+  ],
+  "python3.10": [
+    "4.5.0-python3.10-bullseye",
+    "4.5.0-python3.10-windowsservercore"
+  ],
+  "4": [
+    "4.5.0-python3.9-bullseye",
+    "4.5.0-python3.9-windowsservercore"
+  ],
+  "4-python3.9": [
+    "4.5.0-python3.9-bullseye",
+    "4.5.0-python3.9-windowsservercore"
+  ],
+  "4-python3.10": [
+    "4.5.0-python3.10-bullseye",
+    "4.5.0-python3.10-windowsservercore"
+  ],
+  "4.5": [
+    "4.5.0-python3.9-bullseye",
+    "4.5.0-python3.9-windowsservercore"
+  ],
+  "4.5-python3.9": [
+    "4.5.0-python3.9-bullseye",
+    "4.5.0-python3.9-windowsservercore"
+  ],
+  "4.5-python3.10": [
+    "4.5.0-python3.10-bullseye",
+    "4.5.0-python3.10-windowsservercore"
+  ],
+  "4.5.0": [
+    "4.5.0-python3.9-bullseye",
+    "4.5.0-python3.9-windowsservercore"
+  ],
+  "4.5.0-python3.9": [
+    "4.5.0-python3.9-bullseye",
+    "4.5.0-python3.9-windowsservercore"
+  ],
+  "4.5.0-python3.10": [
+    "4.5.0-python3.10-bullseye",
+    "4.5.0-python3.10-windowsservercore"
+  ]
+}
