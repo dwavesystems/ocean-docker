@@ -8,10 +8,10 @@ FROM python:3.10-slim-bullseye
 
 RUN apt-get update \
     && apt-get install -yq --no-install-recommends \
-        build-essential \
+        build-essential git \
     && pip install --no-cache-dir \
         dwave-ocean-sdk==4.5.0 \
-    && apt-get remove -yq build-essential \
+    && apt-get remove -yq build-essential git \
     && apt-get autoremove -yq \
     && apt-get clean \
     && pip cache purge \
