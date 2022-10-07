@@ -1,24 +1,24 @@
 {
-  "canonical_tag": "5.3.0-python3.9-slim-bullseye",
+  "canonical_tag": "5.4.0-python3.9-slim-bullseye",
   "alias_tags": [
     "5-python3.9-slim",
     "5-python3.9-slim-bullseye",
     "5-slim",
     "5-slim-bullseye",
-    "5.3-python3.9-slim",
-    "5.3-python3.9-slim-bullseye",
-    "5.3-slim",
-    "5.3-slim-bullseye",
-    "5.3.0-python3.9-slim",
-    "5.3.0-slim",
-    "5.3.0-slim-bullseye",
+    "5.4-python3.9-slim",
+    "5.4-python3.9-slim-bullseye",
+    "5.4-slim",
+    "5.4-slim-bullseye",
+    "5.4.0-python3.9-slim",
+    "5.4.0-slim",
+    "5.4.0-slim-bullseye",
     "python3.9-slim",
     "python3.9-slim-bullseye",
     "slim",
     "slim-bullseye"
   ],
   "subtags": {
-    "ocean": "5.3.0",
+    "ocean": "5.4.0",
     "python": "3.9",
     "platform": "slim-bullseye"
   }
