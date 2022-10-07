@@ -1,12 +1,12 @@
 {
-  "canonical_tag": "5.0.0-python3.8-bullseye",
+  "canonical_tag": "5.1.0-python3.8-bullseye",
   "alias_tags": [
     "5-python3.8-bullseye",
-    "5.0-python3.8-bullseye",
+    "5.1-python3.8-bullseye",
     "python3.8-bullseye"
   ],
   "subtags": {
-    "ocean": "5.0.0",
+    "ocean": "5.1.0",
     "python": "3.8",
     "platform": "bullseye"
   }
