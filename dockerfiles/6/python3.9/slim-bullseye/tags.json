@@ -1,5 +1,5 @@
 {
-  "canonical_tag": "6.0.0-python3.9-slim-bullseye",
+  "canonical_tag": "6.0.1-python3.9-slim-bullseye",
   "alias_tags": [
     "6-python3.9-slim",
     "6-python3.9-slim-bullseye",
@@ -9,16 +9,16 @@
     "6.0-python3.9-slim-bullseye",
     "6.0-slim",
     "6.0-slim-bullseye",
-    "6.0.0-python3.9-slim",
-    "6.0.0-slim",
-    "6.0.0-slim-bullseye",
+    "6.0.1-python3.9-slim",
+    "6.0.1-slim",
+    "6.0.1-slim-bullseye",
     "python3.9-slim",
     "python3.9-slim-bullseye",
     "slim",
     "slim-bullseye"
   ],
   "subtags": {
-    "ocean": "6.0.0",
+    "ocean": "6.0.1",
     "python": "3.9",
     "platform": "slim-bullseye"
   }
