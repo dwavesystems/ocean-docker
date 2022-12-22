@@ -210,7 +210,6 @@ class BuildConfig:
 
 # ocean version under build
 OCEAN_VERSION = os.getenv('OCEAN_VERSION', get_latest_ocean_version())
-click.echo(f"Using Ocean version {OCEAN_VERSION}")
 
 # TODO: move under cli command(s), build file as option
 build = BuildConfig(config_file='build.json', ocean_version=OCEAN_VERSION)
@@ -265,6 +264,12 @@ def tags():
 
 
 @cli.command()
+def version():
+    """Print Ocean version used."""
+    click.echo(build.ocean_version)
+
+
+@cli.command()
 @click.option('--template', default='README.md.template', type=click.File('r'),
               help='README.md template file path. Set to "-" for stdin.')
 @click.option('--output', default='README.md', type=click.File('w'),
@@ -302,6 +307,7 @@ def readme(template, output):
         strip=f_strip))
 
     output.write(readme)
+    click.echo(f"Generated {output.name!r} for Ocean {build.ocean_version}.")
 
 
 @cli.command()
