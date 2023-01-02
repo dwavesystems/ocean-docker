@@ -8,7 +8,7 @@ with quantum computers.
 ## Build Matrix
 
 - Ocean: [`{{ ocean_version }}`](https://github.com/dwavesystems/dwave-ocean-sdk/releases/{{ ocean_version }})
-- Python: `3.8` (except on Windows), `3.9`, `3.10`
+- Python: `3.8` (except on Windows), `3.9`, **`3.10`** (default), `3.11`
 - Platform: [`bullseye`](https://wiki.debian.org/DebianBullseye), `slim` (minimal bullseye), `windowsservercore`
 
 
