@@ -18,7 +18,7 @@ RUN apt-get update \
     && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/*
 
 RUN pip install --no-cache-dir \
-        dwave-ocean-sdk==6.1.1 \
+        dwave-ocean-sdk==6.2.0 \
     && rm -rf /tmp/*
 
 RUN pip install --no-cache-dir \
