@@ -1,7 +1,7 @@
 {
   "latest": [
-    "6.2.0-python3.9-bullseye",
-    "6.2.0-python3.9-windowsservercore"
+    "6.2.0-python3.10-bullseye",
+    "6.2.0-python3.10-windowsservercore"
   ],
   "python3.9": [
     "6.2.0-python3.9-bullseye",
@@ -11,9 +11,13 @@
     "6.2.0-python3.10-bullseye",
     "6.2.0-python3.10-windowsservercore"
   ],
+  "python3.11": [
+    "6.2.0-python3.11-bullseye",
+    "6.2.0-python3.11-windowsservercore"
+  ],
   "6": [
-    "6.2.0-python3.9-bullseye",
-    "6.2.0-python3.9-windowsservercore"
+    "6.2.0-python3.10-bullseye",
+    "6.2.0-python3.10-windowsservercore"
   ],
   "6-python3.9": [
     "6.2.0-python3.9-bullseye",
@@ -23,9 +27,13 @@
     "6.2.0-python3.10-bullseye",
     "6.2.0-python3.10-windowsservercore"
   ],
+  "6-python3.11": [
+    "6.2.0-python3.11-bullseye",
+    "6.2.0-python3.11-windowsservercore"
+  ],
   "6.2": [
-    "6.2.0-python3.9-bullseye",
-    "6.2.0-python3.9-windowsservercore"
+    "6.2.0-python3.10-bullseye",
+    "6.2.0-python3.10-windowsservercore"
   ],
   "6.2-python3.9": [
     "6.2.0-python3.9-bullseye",
@@ -35,9 +43,13 @@
     "6.2.0-python3.10-bullseye",
     "6.2.0-python3.10-windowsservercore"
   ],
+  "6.2-python3.11": [
+    "6.2.0-python3.11-bullseye",
+    "6.2.0-python3.11-windowsservercore"
+  ],
   "6.2.0": [
-    "6.2.0-python3.9-bullseye",
-    "6.2.0-python3.9-windowsservercore"
+    "6.2.0-python3.10-bullseye",
+    "6.2.0-python3.10-windowsservercore"
   ],
   "6.2.0-python3.9": [
     "6.2.0-python3.9-bullseye",
@@ -46,5 +58,9 @@
   "6.2.0-python3.10": [
     "6.2.0-python3.10-bullseye",
     "6.2.0-python3.10-windowsservercore"
+  ],
+  "6.2.0-python3.11": [
+    "6.2.0-python3.11-bullseye",
+    "6.2.0-python3.11-windowsservercore"
   ]
 }

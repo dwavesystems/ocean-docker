@@ -1,12 +1,8 @@
 {
   "canonical_tag": "6.2.0-python3.9-bullseye",
   "alias_tags": [
-    "6-bullseye",
     "6-python3.9-bullseye",
-    "6.2-bullseye",
     "6.2-python3.9-bullseye",
-    "6.2.0-bullseye",
-    "bullseye",
     "python3.9-bullseye"
   ],
   "subtags": {

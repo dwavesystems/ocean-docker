@@ -2,12 +2,8 @@
   "canonical_tag": "6.2.0-python3.9-windowsservercore",
   "alias_tags": [
     "6-python3.9-windowsservercore",
-    "6-windowsservercore",
     "6.2-python3.9-windowsservercore",
-    "6.2-windowsservercore",
-    "6.2.0-windowsservercore",
-    "python3.9-windowsservercore",
-    "windowsservercore"
+    "python3.9-windowsservercore"
   ],
   "subtags": {
     "ocean": "6.2.0",

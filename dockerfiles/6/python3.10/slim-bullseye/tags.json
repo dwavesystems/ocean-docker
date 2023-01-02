@@ -3,11 +3,19 @@
   "alias_tags": [
     "6-python3.10-slim",
     "6-python3.10-slim-bullseye",
+    "6-slim",
+    "6-slim-bullseye",
     "6.2-python3.10-slim",
     "6.2-python3.10-slim-bullseye",
+    "6.2-slim",
+    "6.2-slim-bullseye",
     "6.2.0-python3.10-slim",
+    "6.2.0-slim",
+    "6.2.0-slim-bullseye",
     "python3.10-slim",
-    "python3.10-slim-bullseye"
+    "python3.10-slim-bullseye",
+    "slim",
+    "slim-bullseye"
   ],
   "subtags": {
     "ocean": "6.2.0",
