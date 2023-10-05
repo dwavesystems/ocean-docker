@@ -29,4 +29,4 @@ git-push:
 	git push
 
 release: ocean_version = $(shell env/bin/python generate.py version)
-release: is-clean git-branch update git-commit
+release: is-clean update git-branch update git-commit
