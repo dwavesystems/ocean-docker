@@ -7,7 +7,7 @@ with quantum computers.
 
 ## Build Matrix
 
-- Ocean: [`6.5.0`](https://github.com/dwavesystems/dwave-ocean-sdk/releases/6.5.0)
+- Ocean: [`6.6.0`](https://github.com/dwavesystems/dwave-ocean-sdk/releases/6.6.0)
 - Python: `3.8` (except on Windows), `3.9`, **`3.10`** (default), `3.11`
 - Platform: [`bullseye`](https://wiki.debian.org/DebianBullseye), `slim` (minimal bullseye), `windowsservercore`
 
@@ -30,118 +30,118 @@ Shared tags map to multi-platform/multi-architecture images.
 
 ### Simple Tags
 
-- [Ocean: `6.5.0`, Python: `3.10`, Platform: `bullseye`](https://github.com/dwavesystems/ocean-docker/blob/master/dockerfiles/6/python3.10/bullseye/Dockerfile)
+- [Ocean: `6.6.0`, Python: `3.10`, Platform: `bullseye`](https://github.com/dwavesystems/ocean-docker/blob/master/dockerfiles/6/python3.10/bullseye/Dockerfile)
   - `6-bullseye`
   - `6-python3.10-bullseye`
-  - `6.5-bullseye`
-  - `6.5-python3.10-bullseye`
-  - `6.5.0-bullseye`
-  - `6.5.0-python3.10-bullseye`
+  - `6.6-bullseye`
+  - `6.6-python3.10-bullseye`
+  - `6.6.0-bullseye`
+  - `6.6.0-python3.10-bullseye`
   - `bullseye`
   - `python3.10-bullseye`
 
-- [Ocean: `6.5.0`, Python: `3.10`, Platform: `slim-bullseye`](https://github.com/dwavesystems/ocean-docker/blob/master/dockerfiles/6/python3.10/slim-bullseye/Dockerfile)
+- [Ocean: `6.6.0`, Python: `3.10`, Platform: `slim-bullseye`](https://github.com/dwavesystems/ocean-docker/blob/master/dockerfiles/6/python3.10/slim-bullseye/Dockerfile)
   - `6-python3.10-slim`
   - `6-python3.10-slim-bullseye`
   - `6-slim`
   - `6-slim-bullseye`
-  - `6.5-python3.10-slim`
-  - `6.5-python3.10-slim-bullseye`
-  - `6.5-slim`
-  - `6.5-slim-bullseye`
-  - `6.5.0-python3.10-slim`
-  - `6.5.0-python3.10-slim-bullseye`
-  - `6.5.0-slim`
-  - `6.5.0-slim-bullseye`
+  - `6.6-python3.10-slim`
+  - `6.6-python3.10-slim-bullseye`
+  - `6.6-slim`
+  - `6.6-slim-bullseye`
+  - `6.6.0-python3.10-slim`
+  - `6.6.0-python3.10-slim-bullseye`
+  - `6.6.0-slim`
+  - `6.6.0-slim-bullseye`
   - `python3.10-slim`
   - `python3.10-slim-bullseye`
   - `slim`
   - `slim-bullseye`
 
-- [Ocean: `6.5.0`, Python: `3.10`, Platform: `windowsservercore`](https://github.com/dwavesystems/ocean-docker/blob/master/dockerfiles/6/python3.10/windowsservercore/Dockerfile)
+- [Ocean: `6.6.0`, Python: `3.10`, Platform: `windowsservercore`](https://github.com/dwavesystems/ocean-docker/blob/master/dockerfiles/6/python3.10/windowsservercore/Dockerfile)
   - `6-python3.10-windowsservercore`
   - `6-windowsservercore`
-  - `6.5-python3.10-windowsservercore`
-  - `6.5-windowsservercore`
-  - `6.5.0-python3.10-windowsservercore`
-  - `6.5.0-windowsservercore`
+  - `6.6-python3.10-windowsservercore`
+  - `6.6-windowsservercore`
+  - `6.6.0-python3.10-windowsservercore`
+  - `6.6.0-windowsservercore`
   - `python3.10-windowsservercore`
   - `windowsservercore`
 
-- [Ocean: `6.5.0`, Python: `3.8`, Platform: `bullseye`](https://github.com/dwavesystems/ocean-docker/blob/master/dockerfiles/6/python3.8/bullseye/Dockerfile)
+- [Ocean: `6.6.0`, Python: `3.8`, Platform: `bullseye`](https://github.com/dwavesystems/ocean-docker/blob/master/dockerfiles/6/python3.8/bullseye/Dockerfile)
   - `6-python3.8-bullseye`
-  - `6.5-python3.8-bullseye`
-  - `6.5.0-python3.8-bullseye`
+  - `6.6-python3.8-bullseye`
+  - `6.6.0-python3.8-bullseye`
   - `python3.8-bullseye`
 
-- [Ocean: `6.5.0`, Python: `3.8`, Platform: `slim-bullseye`](https://github.com/dwavesystems/ocean-docker/blob/master/dockerfiles/6/python3.8/slim-bullseye/Dockerfile)
+- [Ocean: `6.6.0`, Python: `3.8`, Platform: `slim-bullseye`](https://github.com/dwavesystems/ocean-docker/blob/master/dockerfiles/6/python3.8/slim-bullseye/Dockerfile)
   - `6-python3.8-slim`
   - `6-python3.8-slim-bullseye`
-  - `6.5-python3.8-slim`
-  - `6.5-python3.8-slim-bullseye`
-  - `6.5.0-python3.8-slim`
-  - `6.5.0-python3.8-slim-bullseye`
+  - `6.6-python3.8-slim`
+  - `6.6-python3.8-slim-bullseye`
+  - `6.6.0-python3.8-slim`
+  - `6.6.0-python3.8-slim-bullseye`
   - `python3.8-slim`
   - `python3.8-slim-bullseye`
 
-- [Ocean: `6.5.0`, Python: `3.9`, Platform: `bullseye`](https://github.com/dwavesystems/ocean-docker/blob/master/dockerfiles/6/python3.9/bullseye/Dockerfile)
+- [Ocean: `6.6.0`, Python: `3.9`, Platform: `bullseye`](https://github.com/dwavesystems/ocean-docker/blob/master/dockerfiles/6/python3.9/bullseye/Dockerfile)
   - `6-python3.9-bullseye`
-  - `6.5-python3.9-bullseye`
-  - `6.5.0-python3.9-bullseye`
+  - `6.6-python3.9-bullseye`
+  - `6.6.0-python3.9-bullseye`
   - `python3.9-bullseye`
 
-- [Ocean: `6.5.0`, Python: `3.9`, Platform: `slim-bullseye`](https://github.com/dwavesystems/ocean-docker/blob/master/dockerfiles/6/python3.9/slim-bullseye/Dockerfile)
+- [Ocean: `6.6.0`, Python: `3.9`, Platform: `slim-bullseye`](https://github.com/dwavesystems/ocean-docker/blob/master/dockerfiles/6/python3.9/slim-bullseye/Dockerfile)
   - `6-python3.9-slim`
   - `6-python3.9-slim-bullseye`
-  - `6.5-python3.9-slim`
-  - `6.5-python3.9-slim-bullseye`
-  - `6.5.0-python3.9-slim`
-  - `6.5.0-python3.9-slim-bullseye`
+  - `6.6-python3.9-slim`
+  - `6.6-python3.9-slim-bullseye`
+  - `6.6.0-python3.9-slim`
+  - `6.6.0-python3.9-slim-bullseye`
   - `python3.9-slim`
   - `python3.9-slim-bullseye`
 
-- [Ocean: `6.5.0`, Python: `3.9`, Platform: `windowsservercore`](https://github.com/dwavesystems/ocean-docker/blob/master/dockerfiles/6/python3.9/windowsservercore/Dockerfile)
+- [Ocean: `6.6.0`, Python: `3.9`, Platform: `windowsservercore`](https://github.com/dwavesystems/ocean-docker/blob/master/dockerfiles/6/python3.9/windowsservercore/Dockerfile)
   - `6-python3.9-windowsservercore`
-  - `6.5-python3.9-windowsservercore`
-  - `6.5.0-python3.9-windowsservercore`
+  - `6.6-python3.9-windowsservercore`
+  - `6.6.0-python3.9-windowsservercore`
   - `python3.9-windowsservercore`
 
-- [Ocean: `6.5.0`, Python: `3.11`, Platform: `bullseye`](https://github.com/dwavesystems/ocean-docker/blob/master/dockerfiles/6/python3.11/bullseye/Dockerfile)
+- [Ocean: `6.6.0`, Python: `3.11`, Platform: `bullseye`](https://github.com/dwavesystems/ocean-docker/blob/master/dockerfiles/6/python3.11/bullseye/Dockerfile)
   - `6-python3.11-bullseye`
-  - `6.5-python3.11-bullseye`
-  - `6.5.0-python3.11-bullseye`
+  - `6.6-python3.11-bullseye`
+  - `6.6.0-python3.11-bullseye`
   - `python3.11-bullseye`
 
-- [Ocean: `6.5.0`, Python: `3.11`, Platform: `slim-bullseye`](https://github.com/dwavesystems/ocean-docker/blob/master/dockerfiles/6/python3.11/slim-bullseye/Dockerfile)
+- [Ocean: `6.6.0`, Python: `3.11`, Platform: `slim-bullseye`](https://github.com/dwavesystems/ocean-docker/blob/master/dockerfiles/6/python3.11/slim-bullseye/Dockerfile)
   - `6-python3.11-slim`
   - `6-python3.11-slim-bullseye`
-  - `6.5-python3.11-slim`
-  - `6.5-python3.11-slim-bullseye`
-  - `6.5.0-python3.11-slim`
-  - `6.5.0-python3.11-slim-bullseye`
+  - `6.6-python3.11-slim`
+  - `6.6-python3.11-slim-bullseye`
+  - `6.6.0-python3.11-slim`
+  - `6.6.0-python3.11-slim-bullseye`
   - `python3.11-slim`
   - `python3.11-slim-bullseye`
 
-- [Ocean: `6.5.0`, Python: `3.11`, Platform: `windowsservercore`](https://github.com/dwavesystems/ocean-docker/blob/master/dockerfiles/6/python3.11/windowsservercore/Dockerfile)
+- [Ocean: `6.6.0`, Python: `3.11`, Platform: `windowsservercore`](https://github.com/dwavesystems/ocean-docker/blob/master/dockerfiles/6/python3.11/windowsservercore/Dockerfile)
   - `6-python3.11-windowsservercore`
-  - `6.5-python3.11-windowsservercore`
-  - `6.5.0-python3.11-windowsservercore`
+  - `6.6-python3.11-windowsservercore`
+  - `6.6.0-python3.11-windowsservercore`
   - `python3.11-windowsservercore`
 
 
 ### Shared Tags
 
-- `6`, `6-python3.10`, `6.5`, `6.5-python3.10`, `6.5.0`, `6.5.0-python3.10`, `latest`, `python3.10`
-  - [`6.5.0-python3.10-bullseye`](https://github.com/dwavesystems/ocean-docker/blob/master/dockerfiles/6/python3.10/bullseye/Dockerfile)
-  - [`6.5.0-python3.10-windowsservercore`](https://github.com/dwavesystems/ocean-docker/blob/master/dockerfiles/6/python3.10/windowsservercore/Dockerfile)
+- `6`, `6-python3.10`, `6.6`, `6.6-python3.10`, `6.6.0`, `6.6.0-python3.10`, `latest`, `python3.10`
+  - [`6.6.0-python3.10-bullseye`](https://github.com/dwavesystems/ocean-docker/blob/master/dockerfiles/6/python3.10/bullseye/Dockerfile)
+  - [`6.6.0-python3.10-windowsservercore`](https://github.com/dwavesystems/ocean-docker/blob/master/dockerfiles/6/python3.10/windowsservercore/Dockerfile)
 
-- `6-python3.11`, `6.5-python3.11`, `6.5.0-python3.11`, `python3.11`
-  - [`6.5.0-python3.11-bullseye`](https://github.com/dwavesystems/ocean-docker/blob/master/dockerfiles/6/python3.11/bullseye/Dockerfile)
-  - [`6.5.0-python3.11-windowsservercore`](https://github.com/dwavesystems/ocean-docker/blob/master/dockerfiles/6/python3.11/windowsservercore/Dockerfile)
+- `6-python3.11`, `6.6-python3.11`, `6.6.0-python3.11`, `python3.11`
+  - [`6.6.0-python3.11-bullseye`](https://github.com/dwavesystems/ocean-docker/blob/master/dockerfiles/6/python3.11/bullseye/Dockerfile)
+  - [`6.6.0-python3.11-windowsservercore`](https://github.com/dwavesystems/ocean-docker/blob/master/dockerfiles/6/python3.11/windowsservercore/Dockerfile)
 
-- `6-python3.9`, `6.5-python3.9`, `6.5.0-python3.9`, `python3.9`
-  - [`6.5.0-python3.9-bullseye`](https://github.com/dwavesystems/ocean-docker/blob/master/dockerfiles/6/python3.9/bullseye/Dockerfile)
-  - [`6.5.0-python3.9-windowsservercore`](https://github.com/dwavesystems/ocean-docker/blob/master/dockerfiles/6/python3.9/windowsservercore/Dockerfile)
+- `6-python3.9`, `6.6-python3.9`, `6.6.0-python3.9`, `python3.9`
+  - [`6.6.0-python3.9-bullseye`](https://github.com/dwavesystems/ocean-docker/blob/master/dockerfiles/6/python3.9/bullseye/Dockerfile)
+  - [`6.6.0-python3.9-windowsservercore`](https://github.com/dwavesystems/ocean-docker/blob/master/dockerfiles/6/python3.9/windowsservercore/Dockerfile)
 
 
 
