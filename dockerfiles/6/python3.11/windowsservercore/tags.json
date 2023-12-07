@@ -1,12 +1,16 @@
 {
-  "canonical_tag": "6.7.0-python3.11-windowsservercore",
+  "canonical_tag": "6.7.1-python3.11-windowsservercore",
   "alias_tags": [
     "6-python3.11-windowsservercore",
+    "6-windowsservercore",
     "6.7-python3.11-windowsservercore",
-    "python3.11-windowsservercore"
+    "6.7-windowsservercore",
+    "6.7.1-windowsservercore",
+    "python3.11-windowsservercore",
+    "windowsservercore"
   ],
   "subtags": {
-    "ocean": "6.7.0",
+    "ocean": "6.7.1",
     "python": "3.11",
     "platform": "windowsservercore"
   }
