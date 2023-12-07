@@ -285,11 +285,20 @@ def readme(template, output):
                     "subtags": simple.canonical[c_tag]}
                    for c_tag, a_tags in simple.bags.items()]
 
+    # order by (ocean version, python version, platform) for display purposes
+    parse_version = lambda s: tuple(map(int, s.split('.')))
+    versions_tuple = lambda subtags: (parse_version(subtags['ocean']),
+                                      parse_version(subtags['python']),
+                                      subtags['platform'])
+    simple_tags.sort(key=lambda tag: versions_tuple(tag['subtags']))
+
     _key = lambda tag: ','.join(sorted(shared[tag]))
-    grouped = groupby(sorted(shared, key=_key), key=_key)
+    grouped = [sorted(g) for _, g in groupby(sorted(shared, key=_key), key=_key)]
+    grouped.sort(key=lambda tags: versions_tuple(
+        subtags=simple.canonical[next(iter(shared[tags[0]]))]
+    ))
     shared_tags = []
-    for _, g in grouped:
-        tags = sorted(g)
+    for tags in grouped:
         shared_tags.append({
             "tags": tags,
             "canonical": [{"tag": c_tag,
