@@ -250,6 +250,8 @@ workflows:
                 "dockerfiles/6/python3.10/slim-bullseye",
                 "dockerfiles/6/python3.11/bullseye",
                 "dockerfiles/6/python3.11/slim-bullseye",
+                "dockerfiles/6/python3.12/bullseye",
+                "dockerfiles/6/python3.12/slim-bullseye",
               ]
           filters: &off-master
             branches:
@@ -273,6 +275,7 @@ workflows:
                 "dockerfiles/6/python3.9/windowsservercore",
                 "dockerfiles/6/python3.10/windowsservercore",
                 "dockerfiles/6/python3.11/windowsservercore",
+                "dockerfiles/6/python3.12/windowsservercore",
               ]
           filters: *off-master
           context: *ctx-staging
