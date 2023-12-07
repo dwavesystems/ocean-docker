@@ -306,11 +306,22 @@ def readme(template, output):
                           for c_tag in sorted(shared[tags[0]])]
         })
 
+    # construct a list of python versions, together with exclusions and defaults
+    _join_platforms = lambda rules: ', '.join(r['platform'] for r in rules)
+    python_versions = []
+    for py in filter(None, build.python_versions):
+        python_versions.append({"version": py,
+                                "default": py == build.config['defaults'].get('python'),
+                                "excluded": _join_platforms(
+                                    filter(lambda rule: rule.get('python') == py,
+                                           build.config['exclude']))})
+
     def f_strip(text, render):
         return render(text).strip(' ,')
 
     readme = chevron.render(template.read(), data=dict(
         ocean_version=build.ocean_version,
+        python_versions=python_versions,
         simple_tags=simple_tags,
         shared_tags=shared_tags,
         strip=f_strip))
