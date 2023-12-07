@@ -8,7 +8,7 @@ with quantum computers.
 ## Build Matrix
 
 - Ocean: [`6.7.1`](https://github.com/dwavesystems/dwave-ocean-sdk/releases/6.7.1)
-- Python: `3.8` (except on Windows), `3.9`, **`3.10`** (default), `3.11`
+- Python: `3.8` (except on `windowsservercore`), `3.9`, `3.10`, `3.11` (default), `3.12`
 - Platform: [`bullseye`](https://wiki.debian.org/DebianBullseye), `slim` (minimal bullseye), `windowsservercore`
 
 
@@ -29,44 +29,6 @@ Architecture can be shared, though; Linux simple tags point to multi-arch images
 Shared tags map to multi-platform/multi-architecture images.
 
 ### Simple Tags
-
-- [Ocean: `6.7.1`, Python: `3.11`, Platform: `bullseye`](https://github.com/dwavesystems/ocean-docker/blob/master/dockerfiles/6/python3.11/bullseye/Dockerfile)
-  - `6-bullseye`
-  - `6-python3.11-bullseye`
-  - `6.7-bullseye`
-  - `6.7-python3.11-bullseye`
-  - `6.7.1-bullseye`
-  - `6.7.1-python3.11-bullseye`
-  - `bullseye`
-  - `python3.11-bullseye`
-
-- [Ocean: `6.7.1`, Python: `3.11`, Platform: `slim-bullseye`](https://github.com/dwavesystems/ocean-docker/blob/master/dockerfiles/6/python3.11/slim-bullseye/Dockerfile)
-  - `6-python3.11-slim`
-  - `6-python3.11-slim-bullseye`
-  - `6-slim`
-  - `6-slim-bullseye`
-  - `6.7-python3.11-slim`
-  - `6.7-python3.11-slim-bullseye`
-  - `6.7-slim`
-  - `6.7-slim-bullseye`
-  - `6.7.1-python3.11-slim`
-  - `6.7.1-python3.11-slim-bullseye`
-  - `6.7.1-slim`
-  - `6.7.1-slim-bullseye`
-  - `python3.11-slim`
-  - `python3.11-slim-bullseye`
-  - `slim`
-  - `slim-bullseye`
-
-- [Ocean: `6.7.1`, Python: `3.11`, Platform: `windowsservercore`](https://github.com/dwavesystems/ocean-docker/blob/master/dockerfiles/6/python3.11/windowsservercore/Dockerfile)
-  - `6-python3.11-windowsservercore`
-  - `6-windowsservercore`
-  - `6.7-python3.11-windowsservercore`
-  - `6.7-windowsservercore`
-  - `6.7.1-python3.11-windowsservercore`
-  - `6.7.1-windowsservercore`
-  - `python3.11-windowsservercore`
-  - `windowsservercore`
 
 - [Ocean: `6.7.1`, Python: `3.8`, Platform: `bullseye`](https://github.com/dwavesystems/ocean-docker/blob/master/dockerfiles/6/python3.8/bullseye/Dockerfile)
   - `6-python3.8-bullseye`
@@ -128,6 +90,44 @@ Shared tags map to multi-platform/multi-architecture images.
   - `6.7.1-python3.10-windowsservercore`
   - `python3.10-windowsservercore`
 
+- [Ocean: `6.7.1`, Python: `3.11`, Platform: `bullseye`](https://github.com/dwavesystems/ocean-docker/blob/master/dockerfiles/6/python3.11/bullseye/Dockerfile)
+  - `6-bullseye`
+  - `6-python3.11-bullseye`
+  - `6.7-bullseye`
+  - `6.7-python3.11-bullseye`
+  - `6.7.1-bullseye`
+  - `6.7.1-python3.11-bullseye`
+  - `bullseye`
+  - `python3.11-bullseye`
+
+- [Ocean: `6.7.1`, Python: `3.11`, Platform: `slim-bullseye`](https://github.com/dwavesystems/ocean-docker/blob/master/dockerfiles/6/python3.11/slim-bullseye/Dockerfile)
+  - `6-python3.11-slim`
+  - `6-python3.11-slim-bullseye`
+  - `6-slim`
+  - `6-slim-bullseye`
+  - `6.7-python3.11-slim`
+  - `6.7-python3.11-slim-bullseye`
+  - `6.7-slim`
+  - `6.7-slim-bullseye`
+  - `6.7.1-python3.11-slim`
+  - `6.7.1-python3.11-slim-bullseye`
+  - `6.7.1-slim`
+  - `6.7.1-slim-bullseye`
+  - `python3.11-slim`
+  - `python3.11-slim-bullseye`
+  - `slim`
+  - `slim-bullseye`
+
+- [Ocean: `6.7.1`, Python: `3.11`, Platform: `windowsservercore`](https://github.com/dwavesystems/ocean-docker/blob/master/dockerfiles/6/python3.11/windowsservercore/Dockerfile)
+  - `6-python3.11-windowsservercore`
+  - `6-windowsservercore`
+  - `6.7-python3.11-windowsservercore`
+  - `6.7-windowsservercore`
+  - `6.7.1-python3.11-windowsservercore`
+  - `6.7.1-windowsservercore`
+  - `python3.11-windowsservercore`
+  - `windowsservercore`
+
 - [Ocean: `6.7.1`, Python: `3.12`, Platform: `bullseye`](https://github.com/dwavesystems/ocean-docker/blob/master/dockerfiles/6/python3.12/bullseye/Dockerfile)
   - `6-python3.12-bullseye`
   - `6.7-python3.12-bullseye`
@@ -153,6 +153,10 @@ Shared tags map to multi-platform/multi-architecture images.
 
 ### Shared Tags
 
+- `6-python3.9`, `6.7-python3.9`, `6.7.1-python3.9`, `python3.9`
+  - [`6.7.1-python3.9-bullseye`](https://github.com/dwavesystems/ocean-docker/blob/master/dockerfiles/6/python3.9/bullseye/Dockerfile)
+  - [`6.7.1-python3.9-windowsservercore`](https://github.com/dwavesystems/ocean-docker/blob/master/dockerfiles/6/python3.9/windowsservercore/Dockerfile)
+
 - `6-python3.10`, `6.7-python3.10`, `6.7.1-python3.10`, `python3.10`
   - [`6.7.1-python3.10-bullseye`](https://github.com/dwavesystems/ocean-docker/blob/master/dockerfiles/6/python3.10/bullseye/Dockerfile)
   - [`6.7.1-python3.10-windowsservercore`](https://github.com/dwavesystems/ocean-docker/blob/master/dockerfiles/6/python3.10/windowsservercore/Dockerfile)
@@ -164,10 +168,6 @@ Shared tags map to multi-platform/multi-architecture images.
 - `6-python3.12`, `6.7-python3.12`, `6.7.1-python3.12`, `python3.12`
   - [`6.7.1-python3.12-bullseye`](https://github.com/dwavesystems/ocean-docker/blob/master/dockerfiles/6/python3.12/bullseye/Dockerfile)
   - [`6.7.1-python3.12-windowsservercore`](https://github.com/dwavesystems/ocean-docker/blob/master/dockerfiles/6/python3.12/windowsservercore/Dockerfile)
-
-- `6-python3.9`, `6.7-python3.9`, `6.7.1-python3.9`, `python3.9`
-  - [`6.7.1-python3.9-bullseye`](https://github.com/dwavesystems/ocean-docker/blob/master/dockerfiles/6/python3.9/bullseye/Dockerfile)
-  - [`6.7.1-python3.9-windowsservercore`](https://github.com/dwavesystems/ocean-docker/blob/master/dockerfiles/6/python3.9/windowsservercore/Dockerfile)
 
 
 
