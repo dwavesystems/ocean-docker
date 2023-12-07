@@ -1,0 +1,17 @@
+{
+  "canonical_tag": "6.7.1-python3.12-slim-bullseye",
+  "alias_tags": [
+    "6-python3.12-slim",
+    "6-python3.12-slim-bullseye",
+    "6.7-python3.12-slim",
+    "6.7-python3.12-slim-bullseye",
+    "6.7.1-python3.12-slim",
+    "python3.12-slim",
+    "python3.12-slim-bullseye"
+  ],
+  "subtags": {
+    "ocean": "6.7.1",
+    "python": "3.12",
+    "platform": "slim-bullseye"
+  }
+}

@@ -4,7 +4,7 @@
 # PLEASE DO NOT EDIT IT DIRECTLY.
 #
 
-FROM python:3.11-windowsservercore
+FROM python:3.12-windowsservercore
 
 RUN pip install --no-cache-dir \
         dwave-ocean-sdk==6.7.1
