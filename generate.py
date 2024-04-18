@@ -33,10 +33,8 @@ REPO_URL = 'https://github.com/dwavesystems/ocean-docker'
 
 
 def get_latest_ocean_version():
-    url = 'https://api.github.com/repos/dwavesystems/dwave-ocean-sdk/releases'
-    releases = requests.get(url, params=dict(per_page=50, page=1)).json()
-    tags = [release['tag_name'] for release in releases]
-    return max(tags, key=lambda tag: tag.split('.'))
+    url = 'https://api.github.com/repos/dwavesystems/dwave-ocean-sdk/releases/latest'
+    return requests.get(url).json()['tag_name']
 
 def version_rounded(version, scale, sep='.'):
     return sep.join((version.split(sep))[:scale+1])
