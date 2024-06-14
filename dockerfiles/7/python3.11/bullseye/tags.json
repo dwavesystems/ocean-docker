@@ -1,0 +1,17 @@
+{
+  "canonical_tag": "7.0.0-python3.11-bullseye",
+  "alias_tags": [
+    "7-bullseye",
+    "7-python3.11-bullseye",
+    "7.0-bullseye",
+    "7.0-python3.11-bullseye",
+    "7.0.0-bullseye",
+    "bullseye",
+    "python3.11-bullseye"
+  ],
+  "subtags": {
+    "ocean": "7.0.0",
+    "python": "3.11",
+    "platform": "bullseye"
+  }
+}
