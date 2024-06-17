@@ -1,0 +1,17 @@
+{
+  "canonical_tag": "7.0.0-python3.11-windowsservercore",
+  "alias_tags": [
+    "7-python3.11-windowsservercore",
+    "7-windowsservercore",
+    "7.0-python3.11-windowsservercore",
+    "7.0-windowsservercore",
+    "7.0.0-windowsservercore",
+    "python3.11-windowsservercore",
+    "windowsservercore"
+  ],
+  "subtags": {
+    "ocean": "7.0.0",
+    "python": "3.11",
+    "platform": "windowsservercore"
+  }
+}
