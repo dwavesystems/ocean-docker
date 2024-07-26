@@ -1,4 +1,4 @@
-.PHONY: update dockerfiles readme tags is-clean git-branch git-commit git-push release
+.PHONY: update dockerfiles readme tags is-clean git-branch git-commit git-push release gh-pr pr
 SHELL = /bin/bash
 
 update: dockerfiles readme
@@ -29,4 +29,10 @@ git-push:
 	git push
 
 release: ocean_version = $(shell env/bin/python generate.py version)
-release: is-clean update git-branch update git-commit
+release: is-clean git-branch update git-commit
+
+gh-pr:
+	gh pr create --title 'Build Ocean $(ocean_version) images'
+
+pr: ocean_version = $(shell env/bin/python generate.py version)
+pr: git-push gh-pr
