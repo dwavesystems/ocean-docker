@@ -100,7 +100,7 @@ jobs:
           Build context path.
 
     machine:
-      image: ubuntu-2004:202101-01
+      image: default
 
     resource_class: arm.medium
 
