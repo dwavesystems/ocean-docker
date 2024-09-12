@@ -4,7 +4,7 @@
 # PLEASE DO NOT EDIT IT DIRECTLY.
 #
 
-FROM python:3.11-bullseye
+FROM python:3.12-bookworm
 
 RUN apt-get update \
     && apt-get install -yq --no-install-recommends \

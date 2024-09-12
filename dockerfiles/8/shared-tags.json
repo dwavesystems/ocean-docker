@@ -1,82 +1,82 @@
 {
   "latest": [
-    "8.0.0-python3.11-bullseye",
+    "8.0.0-python3.11-bookworm",
     "8.0.0-python3.11-windowsservercore"
   ],
   "python3.9": [
-    "8.0.0-python3.9-bullseye",
+    "8.0.0-python3.9-bookworm",
     "8.0.0-python3.9-windowsservercore"
   ],
   "python3.10": [
-    "8.0.0-python3.10-bullseye",
+    "8.0.0-python3.10-bookworm",
     "8.0.0-python3.10-windowsservercore"
   ],
   "python3.11": [
-    "8.0.0-python3.11-bullseye",
+    "8.0.0-python3.11-bookworm",
     "8.0.0-python3.11-windowsservercore"
   ],
   "python3.12": [
-    "8.0.0-python3.12-bullseye",
+    "8.0.0-python3.12-bookworm",
     "8.0.0-python3.12-windowsservercore"
   ],
   "8": [
-    "8.0.0-python3.11-bullseye",
+    "8.0.0-python3.11-bookworm",
     "8.0.0-python3.11-windowsservercore"
   ],
   "8-python3.9": [
-    "8.0.0-python3.9-bullseye",
+    "8.0.0-python3.9-bookworm",
     "8.0.0-python3.9-windowsservercore"
   ],
   "8-python3.10": [
-    "8.0.0-python3.10-bullseye",
+    "8.0.0-python3.10-bookworm",
     "8.0.0-python3.10-windowsservercore"
   ],
   "8-python3.11": [
-    "8.0.0-python3.11-bullseye",
+    "8.0.0-python3.11-bookworm",
     "8.0.0-python3.11-windowsservercore"
   ],
   "8-python3.12": [
-    "8.0.0-python3.12-bullseye",
+    "8.0.0-python3.12-bookworm",
     "8.0.0-python3.12-windowsservercore"
   ],
   "8.0": [
-    "8.0.0-python3.11-bullseye",
+    "8.0.0-python3.11-bookworm",
     "8.0.0-python3.11-windowsservercore"
   ],
   "8.0-python3.9": [
-    "8.0.0-python3.9-bullseye",
+    "8.0.0-python3.9-bookworm",
     "8.0.0-python3.9-windowsservercore"
   ],
   "8.0-python3.10": [
-    "8.0.0-python3.10-bullseye",
+    "8.0.0-python3.10-bookworm",
     "8.0.0-python3.10-windowsservercore"
   ],
   "8.0-python3.11": [
-    "8.0.0-python3.11-bullseye",
+    "8.0.0-python3.11-bookworm",
     "8.0.0-python3.11-windowsservercore"
   ],
   "8.0-python3.12": [
-    "8.0.0-python3.12-bullseye",
+    "8.0.0-python3.12-bookworm",
     "8.0.0-python3.12-windowsservercore"
   ],
   "8.0.0": [
-    "8.0.0-python3.11-bullseye",
+    "8.0.0-python3.11-bookworm",
     "8.0.0-python3.11-windowsservercore"
   ],
   "8.0.0-python3.9": [
-    "8.0.0-python3.9-bullseye",
+    "8.0.0-python3.9-bookworm",
     "8.0.0-python3.9-windowsservercore"
   ],
   "8.0.0-python3.10": [
-    "8.0.0-python3.10-bullseye",
+    "8.0.0-python3.10-bookworm",
     "8.0.0-python3.10-windowsservercore"
   ],
   "8.0.0-python3.11": [
-    "8.0.0-python3.11-bullseye",
+    "8.0.0-python3.11-bookworm",
     "8.0.0-python3.11-windowsservercore"
   ],
   "8.0.0-python3.12": [
-    "8.0.0-python3.12-bullseye",
+    "8.0.0-python3.12-bookworm",
     "8.0.0-python3.12-windowsservercore"
   ]
 }
