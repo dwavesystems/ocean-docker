@@ -1,0 +1,13 @@
+{
+  "canonical_tag": "8.0.0-python3.10-windowsservercore",
+  "alias_tags": [
+    "8-python3.10-windowsservercore",
+    "8.0-python3.10-windowsservercore",
+    "python3.10-windowsservercore"
+  ],
+  "subtags": {
+    "ocean": "8.0.0",
+    "python": "3.10",
+    "platform": "windowsservercore"
+  }
+}

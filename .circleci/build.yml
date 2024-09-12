@@ -242,16 +242,16 @@ workflows:
             parameters:
               # list manually for now; long-term, we want to auto-generate this list from the main runner
               path: &linux-dockerfiles [
-                "dockerfiles/7/python3.8/bullseye",
-                "dockerfiles/7/python3.8/slim-bullseye",
-                "dockerfiles/7/python3.9/bullseye",
-                "dockerfiles/7/python3.9/slim-bullseye",
-                "dockerfiles/7/python3.10/bullseye",
-                "dockerfiles/7/python3.10/slim-bullseye",
-                "dockerfiles/7/python3.11/bullseye",
-                "dockerfiles/7/python3.11/slim-bullseye",
-                "dockerfiles/7/python3.12/bullseye",
-                "dockerfiles/7/python3.12/slim-bullseye",
+                "dockerfiles/8/python3.8/bullseye",
+                "dockerfiles/8/python3.8/slim-bullseye",
+                "dockerfiles/8/python3.9/bullseye",
+                "dockerfiles/8/python3.9/slim-bullseye",
+                "dockerfiles/8/python3.10/bullseye",
+                "dockerfiles/8/python3.10/slim-bullseye",
+                "dockerfiles/8/python3.11/bullseye",
+                "dockerfiles/8/python3.11/slim-bullseye",
+                "dockerfiles/8/python3.12/bullseye",
+                "dockerfiles/8/python3.12/slim-bullseye",
               ]
           filters: &off-master
             branches:
@@ -272,10 +272,10 @@ workflows:
             parameters:
               # list manually for now; long-term, we want to auto-generate this list from the main runner
               path: &windows-dockerfiles [
-                "dockerfiles/7/python3.9/windowsservercore",
-                "dockerfiles/7/python3.10/windowsservercore",
-                "dockerfiles/7/python3.11/windowsservercore",
-                "dockerfiles/7/python3.12/windowsservercore",
+                "dockerfiles/8/python3.9/windowsservercore",
+                "dockerfiles/8/python3.10/windowsservercore",
+                "dockerfiles/8/python3.11/windowsservercore",
+                "dockerfiles/8/python3.12/windowsservercore",
               ]
           filters: *off-master
           context: *ctx-staging
@@ -313,7 +313,7 @@ workflows:
           matrix:
             alias: create-shared-tags
             parameters:
-              path: &shared-tags ["dockerfiles/7"]
+              path: &shared-tags ["dockerfiles/8"]
           filters: *off-master
           context: *ctx-staging
 
