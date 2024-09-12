@@ -9,7 +9,7 @@ with quantum computers.
 
 - Ocean: [`{{ ocean_version }}`](https://github.com/dwavesystems/dwave-ocean-sdk/releases/{{ ocean_version }})
 - Python: {{#strip}}{{#python_versions}}`{{version}}`{{#excluded}} (except on `{{.}}`){{/excluded}}{{#default}} (default){{/default}}, {{/python_versions}}{{/strip}}
-- Platform: [`bullseye`](https://wiki.debian.org/DebianBullseye), `slim` (minimal bullseye), `windowsservercore`
+- Platform: [`bookworm`](https://wiki.debian.org/DebianBookworm), `slim` (minimal bookworm), `windowsservercore`
 
 
 ## Architectures

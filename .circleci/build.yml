@@ -242,16 +242,16 @@ workflows:
             parameters:
               # list manually for now; long-term, we want to auto-generate this list from the main runner
               path: &linux-dockerfiles [
-                "dockerfiles/8/python3.8/bullseye",
-                "dockerfiles/8/python3.8/slim-bullseye",
-                "dockerfiles/8/python3.9/bullseye",
-                "dockerfiles/8/python3.9/slim-bullseye",
-                "dockerfiles/8/python3.10/bullseye",
-                "dockerfiles/8/python3.10/slim-bullseye",
-                "dockerfiles/8/python3.11/bullseye",
-                "dockerfiles/8/python3.11/slim-bullseye",
-                "dockerfiles/8/python3.12/bullseye",
-                "dockerfiles/8/python3.12/slim-bullseye",
+                "dockerfiles/8/python3.8/bookworm",
+                "dockerfiles/8/python3.8/slim-bookworm",
+                "dockerfiles/8/python3.9/bookworm",
+                "dockerfiles/8/python3.9/slim-bookworm",
+                "dockerfiles/8/python3.10/bookworm",
+                "dockerfiles/8/python3.10/slim-bookworm",
+                "dockerfiles/8/python3.11/bookworm",
+                "dockerfiles/8/python3.11/slim-bookworm",
+                "dockerfiles/8/python3.12/bookworm",
+                "dockerfiles/8/python3.12/slim-bookworm",
               ]
           filters: &off-master
             branches:
