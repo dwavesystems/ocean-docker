@@ -3,11 +3,19 @@
   "alias_tags": [
     "8-python3.12-slim",
     "8-python3.12-slim-bookworm",
+    "8-slim",
+    "8-slim-bookworm",
     "8.1-python3.12-slim",
     "8.1-python3.12-slim-bookworm",
+    "8.1-slim",
+    "8.1-slim-bookworm",
     "8.1.0-python3.12-slim",
+    "8.1.0-slim",
+    "8.1.0-slim-bookworm",
     "python3.12-slim",
-    "python3.12-slim-bookworm"
+    "python3.12-slim-bookworm",
+    "slim",
+    "slim-bookworm"
   ],
   "subtags": {
     "ocean": "8.1.0",

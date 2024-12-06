@@ -1,7 +1,7 @@
 {
   "latest": [
-    "8.1.0-python3.11-bookworm",
-    "8.1.0-python3.11-windowsservercore"
+    "8.1.0-python3.12-bookworm",
+    "8.1.0-python3.12-windowsservercore"
   ],
   "python3.9": [
     "8.1.0-python3.9-bookworm",
@@ -19,9 +19,13 @@
     "8.1.0-python3.12-bookworm",
     "8.1.0-python3.12-windowsservercore"
   ],
+  "python3.13": [
+    "8.1.0-python3.13-bookworm",
+    "8.1.0-python3.13-windowsservercore"
+  ],
   "8": [
-    "8.1.0-python3.11-bookworm",
-    "8.1.0-python3.11-windowsservercore"
+    "8.1.0-python3.12-bookworm",
+    "8.1.0-python3.12-windowsservercore"
   ],
   "8-python3.9": [
     "8.1.0-python3.9-bookworm",
@@ -39,9 +43,13 @@
     "8.1.0-python3.12-bookworm",
     "8.1.0-python3.12-windowsservercore"
   ],
+  "8-python3.13": [
+    "8.1.0-python3.13-bookworm",
+    "8.1.0-python3.13-windowsservercore"
+  ],
   "8.1": [
-    "8.1.0-python3.11-bookworm",
-    "8.1.0-python3.11-windowsservercore"
+    "8.1.0-python3.12-bookworm",
+    "8.1.0-python3.12-windowsservercore"
   ],
   "8.1-python3.9": [
     "8.1.0-python3.9-bookworm",
@@ -59,9 +67,13 @@
     "8.1.0-python3.12-bookworm",
     "8.1.0-python3.12-windowsservercore"
   ],
+  "8.1-python3.13": [
+    "8.1.0-python3.13-bookworm",
+    "8.1.0-python3.13-windowsservercore"
+  ],
   "8.1.0": [
-    "8.1.0-python3.11-bookworm",
-    "8.1.0-python3.11-windowsservercore"
+    "8.1.0-python3.12-bookworm",
+    "8.1.0-python3.12-windowsservercore"
   ],
   "8.1.0-python3.9": [
     "8.1.0-python3.9-bookworm",
@@ -78,5 +90,9 @@
   "8.1.0-python3.12": [
     "8.1.0-python3.12-bookworm",
     "8.1.0-python3.12-windowsservercore"
+  ],
+  "8.1.0-python3.13": [
+    "8.1.0-python3.13-bookworm",
+    "8.1.0-python3.13-windowsservercore"
   ]
 }
