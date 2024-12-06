@@ -1,12 +1,16 @@
 {
-  "canonical_tag": "8.0.1-python3.12-bookworm",
+  "canonical_tag": "8.1.0-python3.12-bookworm",
   "alias_tags": [
+    "8-bookworm",
     "8-python3.12-bookworm",
-    "8.0-python3.12-bookworm",
+    "8.1-bookworm",
+    "8.1-python3.12-bookworm",
+    "8.1.0-bookworm",
+    "bookworm",
     "python3.12-bookworm"
   ],
   "subtags": {
-    "ocean": "8.0.1",
+    "ocean": "8.1.0",
     "python": "3.12",
     "platform": "bookworm"
   }
