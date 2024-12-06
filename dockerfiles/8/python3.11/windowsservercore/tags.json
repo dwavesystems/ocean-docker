@@ -1,16 +1,16 @@
 {
-  "canonical_tag": "8.0.1-python3.11-windowsservercore",
+  "canonical_tag": "8.1.0-python3.11-windowsservercore",
   "alias_tags": [
     "8-python3.11-windowsservercore",
     "8-windowsservercore",
-    "8.0-python3.11-windowsservercore",
-    "8.0-windowsservercore",
-    "8.0.1-windowsservercore",
+    "8.1-python3.11-windowsservercore",
+    "8.1-windowsservercore",
+    "8.1.0-windowsservercore",
     "python3.11-windowsservercore",
     "windowsservercore"
   ],
   "subtags": {
-    "ocean": "8.0.1",
+    "ocean": "8.1.0",
     "python": "3.11",
     "platform": "windowsservercore"
   }

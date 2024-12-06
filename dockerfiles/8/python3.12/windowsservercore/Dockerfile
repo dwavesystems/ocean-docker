@@ -7,6 +7,6 @@
 FROM python:3.12-windowsservercore
 
 RUN pip install --no-cache-dir \
-        dwave-ocean-sdk==8.0.1
+        dwave-ocean-sdk==8.1.0
 
 CMD ["python"]

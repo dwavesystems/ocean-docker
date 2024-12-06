@@ -10,7 +10,7 @@ RUN apt-get update \
     && apt-get install -yq --no-install-recommends \
         build-essential git \
     && pip install --no-cache-dir \
-        dwave-ocean-sdk==8.0.1 \
+        dwave-ocean-sdk==8.1.0 \
     && apt-get remove -yq build-essential git \
     && apt-get autoremove -yq \
     && apt-get clean \
