@@ -242,16 +242,16 @@ workflows:
             parameters:
               # list manually for now; long-term, we want to auto-generate this list from the main runner
               path: &linux-dockerfiles [
-                "dockerfiles/8/python3.9/bookworm",
-                "dockerfiles/8/python3.9/slim-bookworm",
-                "dockerfiles/8/python3.10/bookworm",
-                "dockerfiles/8/python3.10/slim-bookworm",
-                "dockerfiles/8/python3.11/bookworm",
-                "dockerfiles/8/python3.11/slim-bookworm",
-                "dockerfiles/8/python3.12/bookworm",
-                "dockerfiles/8/python3.12/slim-bookworm",
-                "dockerfiles/8/python3.13/bookworm",
-                "dockerfiles/8/python3.13/slim-bookworm",
+                "dockerfiles/9/python3.9/bookworm",
+                "dockerfiles/9/python3.9/slim-bookworm",
+                "dockerfiles/9/python3.10/bookworm",
+                "dockerfiles/9/python3.10/slim-bookworm",
+                "dockerfiles/9/python3.11/bookworm",
+                "dockerfiles/9/python3.11/slim-bookworm",
+                "dockerfiles/9/python3.12/bookworm",
+                "dockerfiles/9/python3.12/slim-bookworm",
+                "dockerfiles/9/python3.13/bookworm",
+                "dockerfiles/9/python3.13/slim-bookworm",
               ]
           filters: &off-master
             branches:
@@ -272,11 +272,11 @@ workflows:
             parameters:
               # list manually for now; long-term, we want to auto-generate this list from the main runner
               path: &windows-dockerfiles [
-                "dockerfiles/8/python3.9/windowsservercore",
-                "dockerfiles/8/python3.10/windowsservercore",
-                "dockerfiles/8/python3.11/windowsservercore",
-                "dockerfiles/8/python3.12/windowsservercore",
-                "dockerfiles/8/python3.13/windowsservercore",
+                "dockerfiles/9/python3.9/windowsservercore",
+                "dockerfiles/9/python3.10/windowsservercore",
+                "dockerfiles/9/python3.11/windowsservercore",
+                "dockerfiles/9/python3.12/windowsservercore",
+                "dockerfiles/9/python3.13/windowsservercore",
               ]
           filters: *off-master
           context: *ctx-staging
@@ -314,7 +314,7 @@ workflows:
           matrix:
             alias: create-shared-tags
             parameters:
-              path: &shared-tags ["dockerfiles/8"]
+              path: &shared-tags ["dockerfiles/9"]
           filters: *off-master
           context: *ctx-staging
 

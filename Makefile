@@ -31,6 +31,7 @@ git-push:
 release: ocean_version = $(shell env/bin/python generate.py version)
 release: is-clean git-branch update git-commit
 
+gh-pr: ocean_version = $(shell env/bin/python generate.py version)
 gh-pr:
 	gh pr create --title 'Build Ocean $(ocean_version) images'
 

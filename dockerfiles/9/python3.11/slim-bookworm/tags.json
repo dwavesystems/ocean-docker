@@ -1,0 +1,17 @@
+{
+  "canonical_tag": "9.0.0-python3.11-slim-bookworm",
+  "alias_tags": [
+    "9-python3.11-slim",
+    "9-python3.11-slim-bookworm",
+    "9.0-python3.11-slim",
+    "9.0-python3.11-slim-bookworm",
+    "9.0.0-python3.11-slim",
+    "python3.11-slim",
+    "python3.11-slim-bookworm"
+  ],
+  "subtags": {
+    "ocean": "9.0.0",
+    "python": "3.11",
+    "platform": "slim-bookworm"
+  }
+}
