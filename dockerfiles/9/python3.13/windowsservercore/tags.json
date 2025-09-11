@@ -1,0 +1,13 @@
+{
+  "canonical_tag": "9.0.0-python3.13-windowsservercore",
+  "alias_tags": [
+    "9-python3.13-windowsservercore",
+    "9.0-python3.13-windowsservercore",
+    "python3.13-windowsservercore"
+  ],
+  "subtags": {
+    "ocean": "9.0.0",
+    "python": "3.13",
+    "platform": "windowsservercore"
+  }
+}

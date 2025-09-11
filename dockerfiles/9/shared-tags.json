@@ -1,0 +1,98 @@
+{
+  "latest": [
+    "9.0.0-python3.12-bookworm",
+    "9.0.0-python3.12-windowsservercore"
+  ],
+  "python3.9": [
+    "9.0.0-python3.9-bookworm",
+    "9.0.0-python3.9-windowsservercore"
+  ],
+  "python3.10": [
+    "9.0.0-python3.10-bookworm",
+    "9.0.0-python3.10-windowsservercore"
+  ],
+  "python3.11": [
+    "9.0.0-python3.11-bookworm",
+    "9.0.0-python3.11-windowsservercore"
+  ],
+  "python3.12": [
+    "9.0.0-python3.12-bookworm",
+    "9.0.0-python3.12-windowsservercore"
+  ],
+  "python3.13": [
+    "9.0.0-python3.13-bookworm",
+    "9.0.0-python3.13-windowsservercore"
+  ],
+  "9": [
+    "9.0.0-python3.12-bookworm",
+    "9.0.0-python3.12-windowsservercore"
+  ],
+  "9-python3.9": [
+    "9.0.0-python3.9-bookworm",
+    "9.0.0-python3.9-windowsservercore"
+  ],
+  "9-python3.10": [
+    "9.0.0-python3.10-bookworm",
+    "9.0.0-python3.10-windowsservercore"
+  ],
+  "9-python3.11": [
+    "9.0.0-python3.11-bookworm",
+    "9.0.0-python3.11-windowsservercore"
+  ],
+  "9-python3.12": [
+    "9.0.0-python3.12-bookworm",
+    "9.0.0-python3.12-windowsservercore"
+  ],
+  "9-python3.13": [
+    "9.0.0-python3.13-bookworm",
+    "9.0.0-python3.13-windowsservercore"
+  ],
+  "9.0": [
+    "9.0.0-python3.12-bookworm",
+    "9.0.0-python3.12-windowsservercore"
+  ],
+  "9.0-python3.9": [
+    "9.0.0-python3.9-bookworm",
+    "9.0.0-python3.9-windowsservercore"
+  ],
+  "9.0-python3.10": [
+    "9.0.0-python3.10-bookworm",
+    "9.0.0-python3.10-windowsservercore"
+  ],
+  "9.0-python3.11": [
+    "9.0.0-python3.11-bookworm",
+    "9.0.0-python3.11-windowsservercore"
+  ],
+  "9.0-python3.12": [
+    "9.0.0-python3.12-bookworm",
+    "9.0.0-python3.12-windowsservercore"
+  ],
+  "9.0-python3.13": [
+    "9.0.0-python3.13-bookworm",
+    "9.0.0-python3.13-windowsservercore"
+  ],
+  "9.0.0": [
+    "9.0.0-python3.12-bookworm",
+    "9.0.0-python3.12-windowsservercore"
+  ],
+  "9.0.0-python3.9": [
+    "9.0.0-python3.9-bookworm",
+    "9.0.0-python3.9-windowsservercore"
+  ],
+  "9.0.0-python3.10": [
+    "9.0.0-python3.10-bookworm",
+    "9.0.0-python3.10-windowsservercore"
+  ],
+  "9.0.0-python3.11": [
+    "9.0.0-python3.11-bookworm",
+    "9.0.0-python3.11-windowsservercore"
+  ],
+  "9.0.0-python3.12": [
+    "9.0.0-python3.12-bookworm",
+    "9.0.0-python3.12-windowsservercore"
+  ],
+  "9.0.0-python3.13": [
+    "9.0.0-python3.13-bookworm",
+    "9.0.0-python3.13-windowsservercore"
+  ]
+}
