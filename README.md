@@ -9,7 +9,12 @@ with quantum computers.
 
 - Ocean: [`9.0.0`](https://github.com/dwavesystems/dwave-ocean-sdk/releases/9.0.0)
 - Python: `3.9`, `3.10`, `3.11`, `3.12` (default), `3.13`
-- Platform: [`bookworm`](https://wiki.debian.org/DebianBookworm), `slim` (minimal bookworm), `windowsservercore`
+- Platform:
+    [`trixie`](https://wiki.debian.org/DebianTrixie),
+    `slim-trixie` (minimal trixie),
+    [`bookworm`](https://wiki.debian.org/DebianBookworm) (default),
+    `slim` (minimal bookworm),
+    `windowsservercore`
 
 
 ## Architectures
@@ -46,6 +51,18 @@ Shared tags map to multi-platform/multi-architecture images.
   - `python3.9-slim`
   - `python3.9-slim-bookworm`
 
+- [Ocean: `9.0.0`, Python: `3.9`, Platform: `slim-trixie`](https://github.com/dwavesystems/ocean-docker/blob/master/dockerfiles/9/python3.9/slim-trixie/Dockerfile)
+  - `9-python3.9-slim-trixie`
+  - `9.0-python3.9-slim-trixie`
+  - `9.0.0-python3.9-slim-trixie`
+  - `python3.9-slim-trixie`
+
+- [Ocean: `9.0.0`, Python: `3.9`, Platform: `trixie`](https://github.com/dwavesystems/ocean-docker/blob/master/dockerfiles/9/python3.9/trixie/Dockerfile)
+  - `9-python3.9-trixie`
+  - `9.0-python3.9-trixie`
+  - `9.0.0-python3.9-trixie`
+  - `python3.9-trixie`
+
 - [Ocean: `9.0.0`, Python: `3.9`, Platform: `windowsservercore`](https://github.com/dwavesystems/ocean-docker/blob/master/dockerfiles/9/python3.9/windowsservercore/Dockerfile)
   - `9-python3.9-windowsservercore`
   - `9.0-python3.9-windowsservercore`
@@ -68,6 +85,18 @@ Shared tags map to multi-platform/multi-architecture images.
   - `python3.10-slim`
   - `python3.10-slim-bookworm`
 
+- [Ocean: `9.0.0`, Python: `3.10`, Platform: `slim-trixie`](https://github.com/dwavesystems/ocean-docker/blob/master/dockerfiles/9/python3.10/slim-trixie/Dockerfile)
+  - `9-python3.10-slim-trixie`
+  - `9.0-python3.10-slim-trixie`
+  - `9.0.0-python3.10-slim-trixie`
+  - `python3.10-slim-trixie`
+
+- [Ocean: `9.0.0`, Python: `3.10`, Platform: `trixie`](https://github.com/dwavesystems/ocean-docker/blob/master/dockerfiles/9/python3.10/trixie/Dockerfile)
+  - `9-python3.10-trixie`
+  - `9.0-python3.10-trixie`
+  - `9.0.0-python3.10-trixie`
+  - `python3.10-trixie`
+
 - [Ocean: `9.0.0`, Python: `3.10`, Platform: `windowsservercore`](https://github.com/dwavesystems/ocean-docker/blob/master/dockerfiles/9/python3.10/windowsservercore/Dockerfile)
   - `9-python3.10-windowsservercore`
   - `9.0-python3.10-windowsservercore`
@@ -89,6 +118,18 @@ Shared tags map to multi-platform/multi-architecture images.
   - `9.0.0-python3.11-slim-bookworm`
   - `python3.11-slim`
   - `python3.11-slim-bookworm`
+
+- [Ocean: `9.0.0`, Python: `3.11`, Platform: `slim-trixie`](https://github.com/dwavesystems/ocean-docker/blob/master/dockerfiles/9/python3.11/slim-trixie/Dockerfile)
+  - `9-python3.11-slim-trixie`
+  - `9.0-python3.11-slim-trixie`
+  - `9.0.0-python3.11-slim-trixie`
+  - `python3.11-slim-trixie`
+
+- [Ocean: `9.0.0`, Python: `3.11`, Platform: `trixie`](https://github.com/dwavesystems/ocean-docker/blob/master/dockerfiles/9/python3.11/trixie/Dockerfile)
+  - `9-python3.11-trixie`
+  - `9.0-python3.11-trixie`
+  - `9.0.0-python3.11-trixie`
+  - `python3.11-trixie`
 
 - [Ocean: `9.0.0`, Python: `3.11`, Platform: `windowsservercore`](https://github.com/dwavesystems/ocean-docker/blob/master/dockerfiles/9/python3.11/windowsservercore/Dockerfile)
   - `9-python3.11-windowsservercore`
@@ -124,6 +165,26 @@ Shared tags map to multi-platform/multi-architecture images.
   - `slim`
   - `slim-bookworm`
 
+- [Ocean: `9.0.0`, Python: `3.12`, Platform: `slim-trixie`](https://github.com/dwavesystems/ocean-docker/blob/master/dockerfiles/9/python3.12/slim-trixie/Dockerfile)
+  - `9-python3.12-slim-trixie`
+  - `9-slim-trixie`
+  - `9.0-python3.12-slim-trixie`
+  - `9.0-slim-trixie`
+  - `9.0.0-python3.12-slim-trixie`
+  - `9.0.0-slim-trixie`
+  - `python3.12-slim-trixie`
+  - `slim-trixie`
+
+- [Ocean: `9.0.0`, Python: `3.12`, Platform: `trixie`](https://github.com/dwavesystems/ocean-docker/blob/master/dockerfiles/9/python3.12/trixie/Dockerfile)
+  - `9-python3.12-trixie`
+  - `9-trixie`
+  - `9.0-python3.12-trixie`
+  - `9.0-trixie`
+  - `9.0.0-python3.12-trixie`
+  - `9.0.0-trixie`
+  - `python3.12-trixie`
+  - `trixie`
+
 - [Ocean: `9.0.0`, Python: `3.12`, Platform: `windowsservercore`](https://github.com/dwavesystems/ocean-docker/blob/master/dockerfiles/9/python3.12/windowsservercore/Dockerfile)
   - `9-python3.12-windowsservercore`
   - `9-windowsservercore`
@@ -149,6 +210,18 @@ Shared tags map to multi-platform/multi-architecture images.
   - `9.0.0-python3.13-slim-bookworm`
   - `python3.13-slim`
   - `python3.13-slim-bookworm`
+
+- [Ocean: `9.0.0`, Python: `3.13`, Platform: `slim-trixie`](https://github.com/dwavesystems/ocean-docker/blob/master/dockerfiles/9/python3.13/slim-trixie/Dockerfile)
+  - `9-python3.13-slim-trixie`
+  - `9.0-python3.13-slim-trixie`
+  - `9.0.0-python3.13-slim-trixie`
+  - `python3.13-slim-trixie`
+
+- [Ocean: `9.0.0`, Python: `3.13`, Platform: `trixie`](https://github.com/dwavesystems/ocean-docker/blob/master/dockerfiles/9/python3.13/trixie/Dockerfile)
+  - `9-python3.13-trixie`
+  - `9.0-python3.13-trixie`
+  - `9.0.0-python3.13-trixie`
+  - `python3.13-trixie`
 
 - [Ocean: `9.0.0`, Python: `3.13`, Platform: `windowsservercore`](https://github.com/dwavesystems/ocean-docker/blob/master/dockerfiles/9/python3.13/windowsservercore/Dockerfile)
   - `9-python3.13-windowsservercore`
