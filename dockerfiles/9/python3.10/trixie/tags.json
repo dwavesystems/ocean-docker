@@ -1,0 +1,13 @@
+{
+  "canonical_tag": "9.0.0-python3.10-trixie",
+  "alias_tags": [
+    "9-python3.10-trixie",
+    "9.0-python3.10-trixie",
+    "python3.10-trixie"
+  ],
+  "subtags": {
+    "ocean": "9.0.0",
+    "python": "3.10",
+    "platform": "trixie"
+  }
+}

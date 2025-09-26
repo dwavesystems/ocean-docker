@@ -244,14 +244,24 @@ workflows:
               path: &linux-dockerfiles [
                 "dockerfiles/9/python3.9/bookworm",
                 "dockerfiles/9/python3.9/slim-bookworm",
+                "dockerfiles/9/python3.9/trixie",
+                "dockerfiles/9/python3.9/slim-trixie",
                 "dockerfiles/9/python3.10/bookworm",
                 "dockerfiles/9/python3.10/slim-bookworm",
+                "dockerfiles/9/python3.10/trixie",
+                "dockerfiles/9/python3.10/slim-trixie",
                 "dockerfiles/9/python3.11/bookworm",
                 "dockerfiles/9/python3.11/slim-bookworm",
+                "dockerfiles/9/python3.11/trixie",
+                "dockerfiles/9/python3.11/slim-trixie",
                 "dockerfiles/9/python3.12/bookworm",
                 "dockerfiles/9/python3.12/slim-bookworm",
+                "dockerfiles/9/python3.12/trixie",
+                "dockerfiles/9/python3.12/slim-trixie",
                 "dockerfiles/9/python3.13/bookworm",
                 "dockerfiles/9/python3.13/slim-bookworm",
+                "dockerfiles/9/python3.13/trixie",
+                "dockerfiles/9/python3.13/slim-trixie",
               ]
           filters: &off-master
             branches:
