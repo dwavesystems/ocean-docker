@@ -10,10 +10,8 @@ with quantum computers.
 - Ocean: [`{{ ocean_version }}`](https://github.com/dwavesystems/dwave-ocean-sdk/releases/{{ ocean_version }})
 - Python: {{#strip}}{{#python_versions}}`{{version}}`{{#excluded}} (except on `{{.}}`){{/excluded}}{{#default}} (default){{/default}}, {{/python_versions}}{{/strip}}
 - Platform:
-    [`trixie`](https://wiki.debian.org/DebianTrixie),
+    [`trixie`](https://wiki.debian.org/DebianTrixie) (default),
     `slim-trixie` (minimal trixie),
-    [`bookworm`](https://wiki.debian.org/DebianBookworm) (default),
-    `slim` (minimal bookworm),
     `windowsservercore`
 
 
