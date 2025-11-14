@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  win: circleci/windows@5.0
+  win: circleci/windows@5.1
   docker: circleci/docker@2.1
 
 parameters:
@@ -123,7 +123,7 @@ jobs:
           Build context path.
 
     executor:
-      name: win/server-2022
+      name: win/server-2025
       shell: bash -eo pipefail
 
     environment:
