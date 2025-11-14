@@ -1,7 +1,7 @@
 {
     "matrix": {
         "ocean": [null, "{ocean.major}", "{ocean.minor}", "{ocean.patch}"],
-        "python": [null, "3.9", "3.10", "3.11", "3.12", "3.13"],
+        "python": [null, "3.10", "3.11", "3.12", "3.13", "3.14"],
         "platform": ["trixie", "slim-trixie", "bookworm", "slim-bookworm", "slim", "windowsservercore"]
     },
     "exclude": [],
@@ -16,7 +16,7 @@
     },
     "defaults": {
         "ocean": "{ocean.patch}",
-        "python": "3.12"
+        "python": "3.13"
     },
     "template": {
         "Dockerfile-linux-slim.template": [
@@ -34,7 +34,7 @@
     "shared": {
         "matrix": {
             "ocean": [null, "{ocean.major}", "{ocean.minor}", "{ocean.patch}"],
-            "python": [null, "3.9", "3.10", "3.11", "3.12", "3.13"],
+            "python": [null, "3.10", "3.11", "3.12", "3.13", "3.14"],
             "platform": [null]
         },
         "contracted": [

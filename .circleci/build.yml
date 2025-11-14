@@ -242,10 +242,6 @@ workflows:
             parameters:
               # list manually for now; long-term, we want to auto-generate this list from the main runner
               path: &linux-dockerfiles [
-                "dockerfiles/9/python3.9/bookworm",
-                "dockerfiles/9/python3.9/slim-bookworm",
-                "dockerfiles/9/python3.9/trixie",
-                "dockerfiles/9/python3.9/slim-trixie",
                 "dockerfiles/9/python3.10/bookworm",
                 "dockerfiles/9/python3.10/slim-bookworm",
                 "dockerfiles/9/python3.10/trixie",
@@ -262,6 +258,10 @@ workflows:
                 "dockerfiles/9/python3.13/slim-bookworm",
                 "dockerfiles/9/python3.13/trixie",
                 "dockerfiles/9/python3.13/slim-trixie",
+                "dockerfiles/9/python3.14/bookworm",
+                "dockerfiles/9/python3.14/slim-bookworm",
+                "dockerfiles/9/python3.14/trixie",
+                "dockerfiles/9/python3.14/slim-trixie",
               ]
           filters: &off-master
             branches:
@@ -282,11 +282,11 @@ workflows:
             parameters:
               # list manually for now; long-term, we want to auto-generate this list from the main runner
               path: &windows-dockerfiles [
-                "dockerfiles/9/python3.9/windowsservercore",
                 "dockerfiles/9/python3.10/windowsservercore",
                 "dockerfiles/9/python3.11/windowsservercore",
                 "dockerfiles/9/python3.12/windowsservercore",
                 "dockerfiles/9/python3.13/windowsservercore",
+                "dockerfiles/9/python3.14/windowsservercore",
               ]
           filters: *off-master
           context: *ctx-staging
