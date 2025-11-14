@@ -1,0 +1,17 @@
+{
+  "canonical_tag": "9.1.0-python3.14-slim-trixie",
+  "alias_tags": [
+    "9-python3.14-slim",
+    "9-python3.14-slim-trixie",
+    "9.1-python3.14-slim",
+    "9.1-python3.14-slim-trixie",
+    "9.1.0-python3.14-slim",
+    "python3.14-slim",
+    "python3.14-slim-trixie"
+  ],
+  "subtags": {
+    "ocean": "9.1.0",
+    "python": "3.14",
+    "platform": "slim-trixie"
+  }
+}
