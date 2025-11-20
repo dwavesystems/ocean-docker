@@ -4,7 +4,7 @@
 # PLEASE DO NOT EDIT IT DIRECTLY.
 #
 
-FROM python:3.13-windowsservercore
+FROM python:3.14-windowsservercore
 
 RUN \
     # Install Microsoft Visual C++ Build Tools (required for source install of some ocean packages) \

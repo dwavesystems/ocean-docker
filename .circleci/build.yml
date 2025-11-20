@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  win: circleci/windows@5.0
+  win: circleci/windows@5.1
   docker: circleci/docker@2.1
 
 parameters:
@@ -123,7 +123,7 @@ jobs:
           Build context path.
 
     executor:
-      name: win/server-2022
+      name: win/server-2025
       shell: bash -eo pipefail
 
     environment:
@@ -242,26 +242,16 @@ workflows:
             parameters:
               # list manually for now; long-term, we want to auto-generate this list from the main runner
               path: &linux-dockerfiles [
-                "dockerfiles/9/python3.9/bookworm",
-                "dockerfiles/9/python3.9/slim-bookworm",
-                "dockerfiles/9/python3.9/trixie",
-                "dockerfiles/9/python3.9/slim-trixie",
-                "dockerfiles/9/python3.10/bookworm",
-                "dockerfiles/9/python3.10/slim-bookworm",
                 "dockerfiles/9/python3.10/trixie",
                 "dockerfiles/9/python3.10/slim-trixie",
-                "dockerfiles/9/python3.11/bookworm",
-                "dockerfiles/9/python3.11/slim-bookworm",
                 "dockerfiles/9/python3.11/trixie",
                 "dockerfiles/9/python3.11/slim-trixie",
-                "dockerfiles/9/python3.12/bookworm",
-                "dockerfiles/9/python3.12/slim-bookworm",
                 "dockerfiles/9/python3.12/trixie",
                 "dockerfiles/9/python3.12/slim-trixie",
-                "dockerfiles/9/python3.13/bookworm",
-                "dockerfiles/9/python3.13/slim-bookworm",
                 "dockerfiles/9/python3.13/trixie",
                 "dockerfiles/9/python3.13/slim-trixie",
+                "dockerfiles/9/python3.14/trixie",
+                "dockerfiles/9/python3.14/slim-trixie",
               ]
           filters: &off-master
             branches:
@@ -282,11 +272,11 @@ workflows:
             parameters:
               # list manually for now; long-term, we want to auto-generate this list from the main runner
               path: &windows-dockerfiles [
-                "dockerfiles/9/python3.9/windowsservercore",
                 "dockerfiles/9/python3.10/windowsservercore",
                 "dockerfiles/9/python3.11/windowsservercore",
                 "dockerfiles/9/python3.12/windowsservercore",
                 "dockerfiles/9/python3.13/windowsservercore",
+                "dockerfiles/9/python3.14/windowsservercore",
               ]
           filters: *off-master
           context: *ctx-staging
