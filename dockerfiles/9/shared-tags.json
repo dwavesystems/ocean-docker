@@ -1,98 +1,98 @@
 {
   "latest": [
-    "9.1.0-python3.13-trixie",
-    "9.1.0-python3.13-windowsservercore"
+    "9.2.0-python3.13-trixie",
+    "9.2.0-python3.13-windowsservercore"
   ],
   "python3.10": [
-    "9.1.0-python3.10-trixie",
-    "9.1.0-python3.10-windowsservercore"
+    "9.2.0-python3.10-trixie",
+    "9.2.0-python3.10-windowsservercore"
   ],
   "python3.11": [
-    "9.1.0-python3.11-trixie",
-    "9.1.0-python3.11-windowsservercore"
+    "9.2.0-python3.11-trixie",
+    "9.2.0-python3.11-windowsservercore"
   ],
   "python3.12": [
-    "9.1.0-python3.12-trixie",
-    "9.1.0-python3.12-windowsservercore"
+    "9.2.0-python3.12-trixie",
+    "9.2.0-python3.12-windowsservercore"
   ],
   "python3.13": [
-    "9.1.0-python3.13-trixie",
-    "9.1.0-python3.13-windowsservercore"
+    "9.2.0-python3.13-trixie",
+    "9.2.0-python3.13-windowsservercore"
   ],
   "python3.14": [
-    "9.1.0-python3.14-trixie",
-    "9.1.0-python3.14-windowsservercore"
+    "9.2.0-python3.14-trixie",
+    "9.2.0-python3.14-windowsservercore"
   ],
   "9": [
-    "9.1.0-python3.13-trixie",
-    "9.1.0-python3.13-windowsservercore"
+    "9.2.0-python3.13-trixie",
+    "9.2.0-python3.13-windowsservercore"
   ],
   "9-python3.10": [
-    "9.1.0-python3.10-trixie",
-    "9.1.0-python3.10-windowsservercore"
+    "9.2.0-python3.10-trixie",
+    "9.2.0-python3.10-windowsservercore"
   ],
   "9-python3.11": [
-    "9.1.0-python3.11-trixie",
-    "9.1.0-python3.11-windowsservercore"
+    "9.2.0-python3.11-trixie",
+    "9.2.0-python3.11-windowsservercore"
   ],
   "9-python3.12": [
-    "9.1.0-python3.12-trixie",
-    "9.1.0-python3.12-windowsservercore"
+    "9.2.0-python3.12-trixie",
+    "9.2.0-python3.12-windowsservercore"
   ],
   "9-python3.13": [
-    "9.1.0-python3.13-trixie",
-    "9.1.0-python3.13-windowsservercore"
+    "9.2.0-python3.13-trixie",
+    "9.2.0-python3.13-windowsservercore"
   ],
   "9-python3.14": [
-    "9.1.0-python3.14-trixie",
-    "9.1.0-python3.14-windowsservercore"
+    "9.2.0-python3.14-trixie",
+    "9.2.0-python3.14-windowsservercore"
   ],
-  "9.1": [
-    "9.1.0-python3.13-trixie",
-    "9.1.0-python3.13-windowsservercore"
+  "9.2": [
+    "9.2.0-python3.13-trixie",
+    "9.2.0-python3.13-windowsservercore"
   ],
-  "9.1-python3.10": [
-    "9.1.0-python3.10-trixie",
-    "9.1.0-python3.10-windowsservercore"
+  "9.2-python3.10": [
+    "9.2.0-python3.10-trixie",
+    "9.2.0-python3.10-windowsservercore"
   ],
-  "9.1-python3.11": [
-    "9.1.0-python3.11-trixie",
-    "9.1.0-python3.11-windowsservercore"
+  "9.2-python3.11": [
+    "9.2.0-python3.11-trixie",
+    "9.2.0-python3.11-windowsservercore"
   ],
-  "9.1-python3.12": [
-    "9.1.0-python3.12-trixie",
-    "9.1.0-python3.12-windowsservercore"
+  "9.2-python3.12": [
+    "9.2.0-python3.12-trixie",
+    "9.2.0-python3.12-windowsservercore"
   ],
-  "9.1-python3.13": [
-    "9.1.0-python3.13-trixie",
-    "9.1.0-python3.13-windowsservercore"
+  "9.2-python3.13": [
+    "9.2.0-python3.13-trixie",
+    "9.2.0-python3.13-windowsservercore"
   ],
-  "9.1-python3.14": [
-    "9.1.0-python3.14-trixie",
-    "9.1.0-python3.14-windowsservercore"
+  "9.2-python3.14": [
+    "9.2.0-python3.14-trixie",
+    "9.2.0-python3.14-windowsservercore"
   ],
-  "9.1.0": [
-    "9.1.0-python3.13-trixie",
-    "9.1.0-python3.13-windowsservercore"
+  "9.2.0": [
+    "9.2.0-python3.13-trixie",
+    "9.2.0-python3.13-windowsservercore"
   ],
-  "9.1.0-python3.10": [
-    "9.1.0-python3.10-trixie",
-    "9.1.0-python3.10-windowsservercore"
+  "9.2.0-python3.10": [
+    "9.2.0-python3.10-trixie",
+    "9.2.0-python3.10-windowsservercore"
   ],
-  "9.1.0-python3.11": [
-    "9.1.0-python3.11-trixie",
-    "9.1.0-python3.11-windowsservercore"
+  "9.2.0-python3.11": [
+    "9.2.0-python3.11-trixie",
+    "9.2.0-python3.11-windowsservercore"
   ],
-  "9.1.0-python3.12": [
-    "9.1.0-python3.12-trixie",
-    "9.1.0-python3.12-windowsservercore"
+  "9.2.0-python3.12": [
+    "9.2.0-python3.12-trixie",
+    "9.2.0-python3.12-windowsservercore"
   ],
-  "9.1.0-python3.13": [
-    "9.1.0-python3.13-trixie",
-    "9.1.0-python3.13-windowsservercore"
+  "9.2.0-python3.13": [
+    "9.2.0-python3.13-trixie",
+    "9.2.0-python3.13-windowsservercore"
   ],
-  "9.1.0-python3.14": [
-    "9.1.0-python3.14-trixie",
-    "9.1.0-python3.14-windowsservercore"
+  "9.2.0-python3.14": [
+    "9.2.0-python3.14-trixie",
+    "9.2.0-python3.14-windowsservercore"
   ]
 }

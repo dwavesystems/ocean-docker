@@ -22,7 +22,7 @@ RUN \
     \
     # Install Ocean \
     pip install --no-cache-dir \
-        dwave-ocean-sdk==9.1.0; \
+        dwave-ocean-sdk==9.2.0; \
     \
     # Remove build tools (keep runtime libraries) \
     Start-Process vs_BuildTools.exe -Wait -NoNewWindow -PassThru \
