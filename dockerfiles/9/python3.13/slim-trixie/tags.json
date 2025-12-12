@@ -1,24 +1,24 @@
 {
-  "canonical_tag": "9.1.0-python3.13-slim-trixie",
+  "canonical_tag": "9.2.0-python3.13-slim-trixie",
   "alias_tags": [
     "9-python3.13-slim",
     "9-python3.13-slim-trixie",
     "9-slim",
     "9-slim-trixie",
-    "9.1-python3.13-slim",
-    "9.1-python3.13-slim-trixie",
-    "9.1-slim",
-    "9.1-slim-trixie",
-    "9.1.0-python3.13-slim",
-    "9.1.0-slim",
-    "9.1.0-slim-trixie",
+    "9.2-python3.13-slim",
+    "9.2-python3.13-slim-trixie",
+    "9.2-slim",
+    "9.2-slim-trixie",
+    "9.2.0-python3.13-slim",
+    "9.2.0-slim",
+    "9.2.0-slim-trixie",
     "python3.13-slim",
     "python3.13-slim-trixie",
     "slim",
     "slim-trixie"
   ],
   "subtags": {
-    "ocean": "9.1.0",
+    "ocean": "9.2.0",
     "python": "3.13",
     "platform": "slim-trixie"
   }
