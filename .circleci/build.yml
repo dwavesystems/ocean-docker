@@ -242,8 +242,6 @@ workflows:
             parameters:
               # list manually for now; long-term, we want to auto-generate this list from the main runner
               path: &linux-dockerfiles [
-                "dockerfiles/9/python3.10/trixie",
-                "dockerfiles/9/python3.10/slim-trixie",
                 "dockerfiles/9/python3.11/trixie",
                 "dockerfiles/9/python3.11/slim-trixie",
                 "dockerfiles/9/python3.12/trixie",
@@ -272,7 +270,6 @@ workflows:
             parameters:
               # list manually for now; long-term, we want to auto-generate this list from the main runner
               path: &windows-dockerfiles [
-                "dockerfiles/9/python3.10/windowsservercore",
                 "dockerfiles/9/python3.11/windowsservercore",
                 "dockerfiles/9/python3.12/windowsservercore",
                 "dockerfiles/9/python3.13/windowsservercore",
